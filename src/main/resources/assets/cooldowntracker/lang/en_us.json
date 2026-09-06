@@ -1,0 +1,10 @@
+{
+  "key.cooldowntracker.edit_hud": "Open Cooldown HUD Editor",
+  "key.cooldowntracker.toggle_ready_box": "Toggle Ready Box",
+  "key.cooldowntracker.toggle_cooldown_box": "Toggle On Cooldown Box",
+  "key.cooldowntracker.toggle_backpack_box": "Toggle Backpack Box",
+  "key.cooldowntracker.toggle_totem_watch_box": "Toggle Totem Watch Box",
+  "key.cooldowntracker.toggle_snake_eyes_box": "Toggle Snake Eyes Box",
+  "key.cooldowntracker.toggle_mood_swings_box": "Toggle Mood Swings Box",
+  "category.cooldowntracker": "Cooldown Tracker"
+}

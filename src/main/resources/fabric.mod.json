@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "cooldowntracker",
+  "version": "${version}",
+  "name": "Cooldown Tracker",
+  "description": "Tracks custom item cooldowns (runes, totems, golden apples, enchanted golden apples) on Complex Gaming Factions with an on-screen HUD.",
+  "authors": [
+    "Valourt"
+  ],
+  "contact": {},
+  "license": "MIT",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "com.tomcraft.cooldowntracker.CooldownTrackerClient"
+    ]
+  },
+  "mixins": [
+    "cooldowntracker.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.14.0",
+    "fabric": "*",
+    "minecraft": "1.18.2",
+    "java": ">=17"
+  }
+}
