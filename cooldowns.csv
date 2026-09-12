@@ -1,0 +1,527 @@
+itemName,cooldownSeconds
+Delayed Cut I,50
+Delayed Cut II,45
+Delayed Cut III,40
+Delayed Cut IV,35
+Delayed Cut V,30
+Colossal Cleave I,85
+Colossal Cleave II,80
+Colossal Cleave III,75
+Colossal Cleave IV,70
+Colossal Cleave V,65
+Living Shadow I,120
+Living Shadow II,110
+Living Shadow III,100
+Living Shadow IV,90
+Living Shadow V,80
+Shadow Slip I,55
+Shadow Slip II,45
+Shadow Slip III,35
+Shadow Slip IV,25
+Shadow Slip V,15
+Bermuda Triangle I,180
+Bermuda Triangle II,180
+Bermuda Triangle III,180
+Bermuda Triangle IV,180
+Bermuda Triangle V,180
+Vine Swing I,90
+Vine Swing II,90
+Vine Swing III,90
+Vine Swing IV,90
+Vine Swing V,90
+Invocation I,120
+Invocation II,105
+Invocation III,90
+Invocation IV,75
+Invocation V,60
+Chromatic Barrier I,60
+Chromatic Barrier II,60
+Chromatic Barrier III,60
+Chromatic Barrier IV,60
+Chromatic Barrier V,60
+Light Speed I,60
+Light Speed II,60
+Light Speed III,60
+Light Speed IV,60
+Light Speed V,60
+Super Star I,300
+Super Star II,300
+Super Star III,300
+Super Star IV,300
+Super Star V,300
+Super Star VI,300
+Super Star VII,300
+Super Star VIII,300
+Super Star IX,300
+Super Star X,300
+Beachball I,120
+Beachball II,120
+Beachball III,120
+Beachball IV,120
+Beachball V,120
+Beachball VI,120
+Beachball VII,120
+Beachball VIII,120
+Beachball IX,120
+Beachball X,120
+Domain Expansion I,180
+Domain Expansion II,180
+Domain Expansion III,180
+Domain Expansion IV,180
+Domain Expansion V,180
+Domain Expansion VI,180
+Domain Expansion VII,180
+Domain Expansion VIII,180
+Domain Expansion IX,180
+Domain Expansion X,180
+Chittering Scarabs I,150
+Chittering Scarabs II,150
+Chittering Scarabs III,150
+Chittering Scarabs IV,150
+Chittering Scarabs V,150
+Apex Plunge I,180
+Apex Plunge II,160
+Apex Plunge III,140
+Apex Plunge IV,120
+Apex Plunge V,100
+Ascension I,150
+Ascension II,150
+Ascension III,150
+Ascension IV,150
+Ascension V,150
+Ascension VI,150
+Ascension VII,150
+Ascension VIII,150
+Ascension IX,150
+Ascension X,150
+Ankh I,240
+Ice Pillar I,120
+Ice Pillar II,120
+Ice Pillar III,120
+Ice Pillar IV,120
+Ice Pillar V,120
+Ice Block I,140
+Ice Block II,140
+Ice Block III,140
+Ice Block IV,140
+Ice Block V,140
+Flurry I,40
+Flurry II,40
+Flurry III,40
+Flurry IV,40
+Flurry V,40
+Expel Cold I,30
+Expel Cold II,30
+Expel Cold III,30
+Expel Cold IV,30
+Expel Cold V,30
+Blizzard I,90
+Blizzard II,90
+Blizzard III,90
+Blizzard IV,90
+Blizzard V,90
+Blizzard VI,90
+Blizzard VII,90
+Blizzard VIII,90
+Blizzard IX,90
+Blizzard X,90
+Snake Eyes I,40
+Snake Eyes II,40
+Snake Eyes III,40
+Snake Eyes IV,40
+Snake Eyes V,40
+All In I,180
+All In II,180
+All In III,180
+All In IV,180
+All In V,180
+Wild Card I,40
+Wild Card II,35
+Wild Card III,30
+Wild Card IV,25
+Wild Card V,20
+Shuffle Deck I,540
+Shuffle Deck II,480
+Shuffle Deck III,420
+Shuffle Deck IV,360
+Shuffle Deck V,300
+Royal Flush I,120
+Royal Flush II,120
+Royal Flush III,120
+Royal Flush IV,120
+Royal Flush V,120
+Royal Flush VI,120
+Royal Flush VII,120
+Royal Flush VIII,120
+Royal Flush IX,120
+Royal Flush X,120
+Bluff I,180
+Bluff II,180
+Bluff III,180
+Bluff IV,180
+Bluff V,180
+Ectoplasm I,120
+Ectoplasm II,100
+Ectoplasm III,80
+Ectoplasm IV,60
+Ectoplasm V,40
+Banshee's Wail I,120
+Banshee's Wail II,120
+Banshee's Wail III,120
+Banshee's Wail IV,120
+Banshee's Wail V,120
+Undying I,600
+Undying II,600
+Undying III,600
+Undying IV,600
+Undying V,600
+Wraithwalk I,90
+Wraithwalk II,90
+Wraithwalk III,90
+Wraithwalk IV,90
+Wraithwalk V,90
+Horsemen Of The Apocalypse I,240
+Horsemen Of The Apocalypse II,220
+Horsemen Of The Apocalypse III,200
+Horsemen Of The Apocalypse IV,180
+Horsemen Of The Apocalypse V,160
+Horsemen Of The Apocalypse VI,140
+Horsemen Of The Apocalypse VII,120
+Horsemen Of The Apocalypse VIII,100
+Horsemen Of The Apocalypse IX,80
+Horsemen Of The Apocalypse X,60
+Warpnapping I,130
+Warpnapping II,110
+Warpnapping III,90
+Warpnapping IV,70
+Warpnapping V,50
+Blinkshot I,80
+Blinkshot II,70
+Blinkshot III,60
+Blinkshot IV,50
+Blinkshot V,40
+Eye Tracker I,80
+Eye Tracker II,80
+Eye Tracker III,80
+Eye Tracker IV,80
+Eye Tracker V,80
+Provoke I,60
+Provoke II,60
+Provoke III,60
+Provoke IV,60
+Provoke V,60
+Shulker Shell I,90
+Shulker Shell II,90
+Shulker Shell III,90
+Shulker Shell IV,90
+Shulker Shell V,90
+Gateway I,300
+Gateway II,270
+Gateway III,240
+Gateway IV,210
+Gateway V,180
+Dragon Breath I,180
+Dragon Breath II,180
+Dragon Breath III,180
+Dragon Breath IV,180
+Dragon Breath V,180
+Dragon Breath VI,180
+Dragon Breath VII,180
+Dragon Breath VIII,180
+Dragon Breath IX,180
+Dragon Breath X,180
+Death Realm I,250
+Death Realm II,240
+Death Realm III,230
+Death Realm IV,220
+Death Realm V,210
+Charon's Toll I,120
+Charon's Toll II,120
+Charon's Toll III,120
+Charon's Toll IV,120
+Charon's Toll V,120
+Wailing Souls I,112
+Wailing Souls II,104
+Wailing Souls III,96
+Wailing Souls IV,88
+Wailing Souls V,80
+Ambrosia I,60
+Green Shell I,45
+Green Shell II,45
+Green Shell III,45
+Green Shell IV,45
+Green Shell V,45
+Sandcastle I,60
+Sandcastle II,60
+Sandcastle III,60
+Sandcastle IV,60
+Sandcastle V,60
+Sharknado I,180
+Sharknado II,180
+Sharknado III,180
+Sharknado IV,180
+Sharknado V,180
+Sharknado VI,180
+Sharknado VII,180
+Sharknado VIII,180
+Sharknado IX,180
+Sharknado X,180
+Solar Beam I,60
+Solar Beam II,60
+Solar Beam III,60
+Solar Beam IV,60
+Solar Beam V,60
+Flintlock I,6
+Flintlock II,6
+Flintlock III,6
+Flintlock IV,6
+Flintlock V,6
+Parlay I,300
+Parlay II,300
+Parlay III,300
+Parlay IV,300
+Parlay V,300
+Dead Man's Chest I,300
+Dead Man's Chest II,300
+Dead Man's Chest III,300
+Dead Man's Chest IV,300
+Dead Man's Chest V,300
+Dead Man's Chest VI,300
+Dead Man's Chest VII,300
+Dead Man's Chest VIII,300
+Dead Man's Chest IX,300
+Dead Man's Chest X,300
+Sting Like A Bee I,60
+Sting Like A Bee II,60
+Sting Like A Bee III,60
+Sting Like A Bee IV,60
+Sting Like A Bee V,60
+Honey Buzz I,45
+Honey Buzz II,45
+Honey Buzz III,45
+Honey Buzz IV,45
+Honey Buzz V,45
+Honey Swirl I,180
+Honey Swirl II,180
+Honey Swirl III,180
+Honey Swirl IV,180
+Honey Swirl V,180
+Joke's On You I,30
+Joke's On You II,30
+Joke's On You III,30
+Joke's On You IV,30
+Joke's On You V,30
+Squirting Flower I,30
+Squirting Flower II,30
+Squirting Flower III,30
+Squirting Flower IV,30
+Squirting Flower V,30
+Circus Cannon I,90
+Circus Cannon II,90
+Circus Cannon III,90
+Circus Cannon IV,90
+Circus Cannon V,90
+Power Pylon I,180
+Power Pylon II,180
+Power Pylon III,180
+Power Pylon IV,180
+Experimental Hexplate I,30
+Experimental Hexplate II,30
+Experimental Hexplate III,30
+Experimental Hexplate IV,30
+Experimental Hexplate V,30
+Grand Strike I,80
+Grand Strike II,70
+Grand Strike III,60
+Grand Strike IV,50
+Grand Strike V,40
+Reposition I,60
+Reposition II,50
+Reposition III,40
+Reposition IV,30
+Reposition V,20
+War General I,120
+War General II,120
+War General III,120
+War General IV,120
+War General V,120
+Unstoppable Force I,130
+Unstoppable Force II,120
+Unstoppable Force III,110
+Unstoppable Force IV,100
+Unstoppable Force V,90
+This Is Sparta I,50
+This Is Sparta II,45
+This Is Sparta III,40
+This Is Sparta IV,35
+This Is Sparta V,30
+Reposition I, 60
+Reposition II, 50
+Reposition III, 40
+Reposition IV, 30
+Reposition V, 20
+Freeze Breath I,120
+Freeze Breath II,120
+Freeze Breath III,120
+Freeze Breath IV,120
+Freeze Breath V,120
+Attractor I,60
+Attractor II,60
+Attractor III,60
+Attractor IV,60
+Attractor V,60
+Repulsor I,60
+Repulsor II,60
+Repulsor III,60
+Repulsor IV,60
+Repulsor V,60
+Sneeze I,120
+Sneeze II,120
+Sneeze III,120
+Sneeze IV,120
+Sneeze V,120
+Roll I,80
+Roll II,70
+Roll III,60
+Roll IV,50
+Roll V,40
+Holy Water I,90
+Holy Water II,90
+Holy Water III,90
+Holy Water IV,90
+Holy Water V,90
+Ascent I,180
+Ascent II,150
+Ascent III,120
+Ascent IV,90
+Ascent V,60
+Trial By Fire I,90
+Trial By Fire II,90
+Trial By Fire III,90
+Trial By Fire IV,90
+Trial By Fire V,90
+Rain Dance I,180
+Rain Dance II,180
+Rain Dance III,180
+Rain Dance IV,180
+Rain Dance V,180
+Ancestral Chant I,30
+Ancestral Chant II,30
+Ancestral Chant III,30
+Ancestral Chant IV,30
+Ancestral Chant V,30
+Chieftain Stomp I,140
+Chieftain Stomp II,120
+Chieftain Stomp III,100
+Chieftain Stomp IV,80
+Chieftain Stomp V,60
+Easter Bells I,120
+Easter Bells II,120
+Easter Bells III,120
+Easter Bells IV,120
+Easter Bells V,120
+Easter Bells VI,120
+Easter Bells VII,120
+Easter Bells VIII,120
+Easter Bells IX,120
+Easter Bells X,120
+Intoxicating Love I,300
+Intoxicating Love II,300
+Intoxicating Love III,300
+Intoxicating Love IV,300
+Intoxicating Love V,300
+Lovestruck I,160
+Lovestruck II,140
+Lovestruck III,120
+Lovestruck IV,100
+Lovestruck V,80
+Present Power Up I,60
+Present Power Up II,60
+Present Power Up III,60
+Present Power Up IV,60
+Present Power Up V,60
+Vampire Bite I,120
+Vampire Bite II,120
+Vampire Bite III,120
+Vampire Bite IV,120
+Vampire Bite V,120
+Red Rain I,60
+Red Rain II,60
+Red Rain III,60
+Red Rain IV,60
+Red Rain V,60
+Jack-o'-turret I,120
+Jack-o'-turret II,120
+Jack-o'-turret III,120
+Jack-o'-turret IV,120
+Jack-o'-turret V,120
+Illusion I,180
+Illusion II,180
+Illusion III,180
+Illusion IV,180
+Illusion V,180
+Sticky Situation I,120
+Sticky Situation II,120
+Sticky Situation III,120
+Sticky Situation IV,120
+Sticky Situation V,120
+Monster Grab I,120
+Monster Grab II,90
+Monster Grab III,60
+Lightning Rod I,60
+Lightning Rod II,60
+Lightning Rod III,60
+Lightning Rod IV,60
+Lightning Rod V,60
+Electrosphere I,180
+Electrosphere II,180
+Electrosphere III,180
+Electrosphere IV,180
+Electrosphere V,180
+Singularity I,180
+Singularity II,180
+Singularity III,180
+Singularity IV,180
+Singularity V,180
+Overdrive I,60
+Overdrive II,60
+Overdrive III,60
+Overdrive IV,60
+Overdrive V,60
+Honorable Blade I,60
+Honorable Blade II,55
+Honorable Blade III,50
+Honorable Blade IV,45
+Honorable Blade V,40
+Kamikaze I,180
+Kamikaze II,180
+Kamikaze III,180
+Kamikaze IV,180
+Kamikaze V,180
+Kamikaze VI,180
+Kamikaze VII,180
+Kamikaze VIII,180
+Kamikaze IX,180
+Kamikaze X,180
+Toxic Forcefield I,240
+Toxic Forcefield II,220
+Toxic Forcefield III,200
+Toxic Forcefield IV,180
+Toxic Forcefield V,160
+Dasher I, 17
+Dasher II, 13
+Dasher III, 9
+Sky Stepper I, 17
+Sky Stepper II, 13
+Sky Stepper III, 9
+Decoy I, 300
+Lightning Crash I, 120
+Exertion I, 120
+Lock Down I, 300
+Shotgun I, 7
+Fortify I, 180
+Healing Aura I, 300
+Forcefield I, 300
+Lunge I, 90
+Banner I, 180
+Safe Zone I, 180
