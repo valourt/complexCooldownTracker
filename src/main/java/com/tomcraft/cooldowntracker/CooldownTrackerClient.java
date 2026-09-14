@@ -2,6 +2,7 @@ package com.tomcraft.cooldowntracker;
 
 import com.tomcraft.cooldowntracker.command.CooldownCommands;
 import com.tomcraft.cooldowntracker.config.CooldownConfig;
+import com.tomcraft.cooldowntracker.config.RemoteUpdateManager;
 import com.tomcraft.cooldowntracker.hud.CooldownHud;
 import com.tomcraft.cooldowntracker.hud.CooldownKeybinds;
 import com.tomcraft.cooldowntracker.hud.ArmorEffectTracker;
@@ -17,10 +18,14 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 
 public class CooldownTrackerClient implements ClientModInitializer {
+
+    private static boolean autoUpdateChecked = false;
+
     @Override
     public void onInitializeClient() {
         CooldownConfig.init();
         HudLayoutConfig.init();
+        RemoteUpdateManager.init();
         CooldownHud.register();
         CooldownCommands.register();
         CooldownKeybinds.register();
@@ -33,6 +38,22 @@ public class CooldownTrackerClient implements ClientModInitializer {
         ArmorEffectTracker.register();
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
+            if (!autoUpdateChecked && client.player != null) {
+                autoUpdateChecked = true;
+                if (RemoteUpdateManager.hasUpdateUrl()) {
+                    RemoteUpdateManager.update(
+                            result -> {
+                                if (result.imported > 0) {
+                                    client.player.sendMessage(new net.minecraft.text.LiteralText(
+                                            "[CooldownTracker] Synced " + result.imported + " item(s) from the shared config."), false);
+                                }
+                            },
+                            error -> { /* silent on auto-update failure - don't spam on every join */ },
+                            client::execute
+                    );
+                }
+            }
+
             while (CooldownKeybinds.editHudKey.wasPressed()) {
                 if (client.currentScreen == null) {
                     client.setScreen(new HudEditScreen());

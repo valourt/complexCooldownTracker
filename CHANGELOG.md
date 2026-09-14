@@ -9,6 +9,23 @@ Everything before this point was numbered 1.0.0 through 2.5.0 under the old
 scheme - this file keeps those entries as-is for history, but 1.1.0 below
 picks up exactly where 2.5.0 left off (same code, renumbered).
 
+## 1.2.4
+
+- Added **remote config sync**, for distributing this mod to other people:
+  host your master `cooldowns.csv` somewhere (e.g. a GitHub raw file link),
+  and have every player's client pull it automatically instead of
+  everyone needing to manually re-import whenever the item roster changes.
+  - `/cooldowns setupdateurl <url>` — point at your hosted CSV (one-time
+    setup per player, or bundle a config file with the URL pre-set)
+  - `/cooldowns update` — manually re-fetch and import at any time
+  - Automatically checks and syncs once per session on joining a world if
+    a URL is configured, with a brief chat confirmation if anything new
+    was imported (silent if the fetch fails, so a temporary network hiccup
+    doesn't spam chat every time someone logs in)
+  - Entirely client-side - no server component needed, and it reuses the
+    exact same CSV import logic (including the reserved-id guard) as
+    manually importing a local file.
+
 ## 1.2.3
 
 - **Fixed the actual bug**: `ArmorEffectTracker` only checked the equipped

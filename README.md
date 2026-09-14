@@ -1,6 +1,6 @@
 # Cooldown Tracker (Fabric, 1.18.2)
 
-Current version: **1.2.3** — check `/cooldowns version` in-game to confirm
+Current version: **1.2.4** — check `/cooldowns version` in-game to confirm
 which build you're actually running, and see `CHANGELOG.md` for what
 changed in each version.
 
@@ -220,6 +220,7 @@ Other commands:
 - `/cooldowns setbgcolor <hex>` / `/cooldowns setopacity <0-100>` — restyle the HUD panels' background (`setopacity 0` gives clean text with no panel at all)
 - `/cooldowns importcsv [file]` — bulk-import from a CSV (see above)
 - `/cooldowns fixbuiltins` — repair totem/golden apple/enchanted golden apple if `additem`, `addrune`, or a CSV row ever overwrote one of them by using a colliding name (see note below)
+- `/cooldowns setupdateurl <url>` / `/cooldowns update` — sync from a hosted CSV, for sharing this mod with others (see section 5 below)
 
 **Heads up:** don't `additem`/`addrune`/CSV-import anything named "totem",
 "golden apple", or "enchanted golden apple" — those three are detected
@@ -227,6 +228,30 @@ directly from the game itself, not chat, so giving them a chat-trigger
 entry breaks them silently (no chat message ever arrives to match). The
 mod now refuses these on the way in; if you already hit this before that
 guard existed, run `/cooldowns fixbuiltins` to repair it.
+
+## 5. Sharing this mod with other people
+
+If you're distributing this mod to friends/your faction, you probably don't
+want everyone manually re-importing a CSV every time an item's cooldown
+changes. Instead, host your master `cooldowns.csv` somewhere with a stable
+URL — a GitHub raw file link is the easiest free option (put the CSV in a
+repo, use the "Raw" button's URL) — and each player runs, once:
+
+```
+/cooldowns setupdateurl https://raw.githubusercontent.com/you/repo/main/cooldowns.csv
+```
+
+That both saves the URL and runs an immediate update. From then on:
+- `/cooldowns update` re-fetches and re-imports at any time
+- It also **automatically checks once per session** when joining a world,
+  with a short chat message if anything new was imported (silent if the
+  fetch fails, so a dropped connection doesn't spam chat on every login)
+
+Whenever you update the hosted CSV (e.g. push a new commit), everyone
+running the mod picks up the change automatically next time they log in —
+you don't need to redistribute a new jar or ask anyone to do anything.
+This is entirely client-side (each player's own game fetches the file
+directly); there's no server component or central service involved.
 
 ## How detection works (for future tweaking)
 

@@ -5,6 +5,7 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.tomcraft.cooldowntracker.config.CooldownConfig;
 import com.tomcraft.cooldowntracker.config.CsvImporter;
+import com.tomcraft.cooldowntracker.config.RemoteUpdateManager;
 import com.tomcraft.cooldowntracker.config.TrackedItem;
 import com.tomcraft.cooldowntracker.hud.HudEditScreen;
 import com.tomcraft.cooldowntracker.hud.HudLayoutConfig;
@@ -39,6 +40,8 @@ import static net.fabricmc.fabric.api.client.command.v1.ClientCommandManager.lit
  * /cooldowns setopacity <0-100> - set the HUD panels' background opacity
  * /cooldowns fixbuiltins        - repair totem/golden_apple/enchanted_golden_apple
  *                                 if additem/addrune/importcsv ever overwrote one
+ * /cooldowns setupdateurl <url> - point at a hosted CSV to auto-sync from (for sharing this mod with others)
+ * /cooldowns update             - manually re-fetch and import from the configured update URL
  */
 public class CooldownCommands {
 
@@ -236,6 +239,20 @@ public class CooldownCommands {
                                                     return 1;
                                                 }))))
                         .then(literal("fixbuiltins").executes(ctx -> runFixBuiltins(ctx)))
+                        .then(literal("setupdateurl")
+                                .then(argument("url", StringArgumentType.greedyString())
+                                        .executes(ctx -> {
+                                            String url = getString(ctx, "url");
+                                            RemoteUpdateManager.setUpdateUrl(url);
+                                            ctx.getSource().sendFeedback(new LiteralText(
+                                                    "[CooldownTracker] Update URL saved. Running an update now..."));
+                                            runRemoteUpdate(ctx);
+                                            return 1;
+                                        })))
+                        .then(literal("update").executes(ctx -> {
+                            runRemoteUpdate(ctx);
+                            return 1;
+                        }))
                         .then(literal("addrune")
                                 .then(argument("id", StringArgumentType.word())
                                         .then(argument("seconds", DoubleArgumentType.doubleArg(0))
@@ -308,6 +325,17 @@ public class CooldownCommands {
                     "[CooldownTracker] ...and " + (matched - shown) + " more matching '" + search + "'. Narrow your search to see them."));
         }
         return matched;
+    }
+
+    private static void runRemoteUpdate(CommandContext<FabricClientCommandSource> ctx) {
+        MinecraftClient client = MinecraftClient.getInstance();
+        RemoteUpdateManager.update(
+                result -> ctx.getSource().sendFeedback(new LiteralText(
+                        "[CooldownTracker] Update complete: imported " + result.imported + " item(s)"
+                                + (result.skipped > 0 ? ", skipped " + result.skipped : "") + ".")),
+                error -> ctx.getSource().sendFeedback(new LiteralText("[CooldownTracker] " + error)),
+                client::execute
+        );
     }
 
     private static int runImport(CommandContext<FabricClientCommandSource> ctx, String fileName) {
