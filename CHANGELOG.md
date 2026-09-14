@@ -9,6 +9,17 @@ Everything before this point was numbered 1.0.0 through 2.5.0 under the old
 scheme - this file keeps those entries as-is for history, but 1.1.0 below
 picks up exactly where 2.5.0 left off (same code, renumbered).
 
+## 1.2.5
+
+- **Fixed a real crash**: `ConcurrentModificationException` in
+  `CooldownBoxes.recomputeIfNeeded`, caused by the remote-update feature -
+  the network fetch correctly ran on a background thread, but the actual
+  import (500+ list mutations) also ran there, at the same time the render
+  thread was iterating that same list every frame to draw the HUD boxes.
+  The import now hops back to the main thread before touching anything,
+  same as every other write path in this mod - only the pure network I/O
+  stays on the background thread.
+
 ## 1.2.4
 
 - Added **remote config sync**, for distributing this mod to other people:

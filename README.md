@@ -1,6 +1,6 @@
 # Cooldown Tracker (Fabric, 1.18.2)
 
-Current version: **1.2.4** — check `/cooldowns version` in-game to confirm
+Current version: **1.2.5** — check `/cooldowns version` in-game to confirm
 which build you're actually running, and see `CHANGELOG.md` for what
 changed in each version.
 

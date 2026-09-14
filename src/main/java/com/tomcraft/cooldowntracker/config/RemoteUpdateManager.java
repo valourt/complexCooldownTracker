@@ -69,10 +69,14 @@ public class RemoteUpdateManager {
 
     /**
      * Fetches the configured URL on a background thread (never blocks the
-     * game), saves it locally, then imports it via the same CsvImporter
-     * used for local files. Both callbacks are dispatched through
-     * mainThreadExecutor (pass MinecraftClient::execute) so it's always
-     * safe to touch chat/UI state from them.
+     * game) - but the actual import runs on the main thread via
+     * mainThreadExecutor (pass MinecraftClient::execute), since it mutates
+     * CooldownConfig's shared item list, which the render thread iterates
+     * every frame to draw the HUD. Importing 500+ items from a background
+     * thread while that's happening caused a real
+     * ConcurrentModificationException crash - confining all list
+     * mutation to the main thread, same as every other write path in this
+     * mod, fixes it properly rather than just papering over the timing.
      */
     public static void update(Consumer<CsvImporter.Result> onComplete, Consumer<String> onError,
                                Consumer<Runnable> mainThreadExecutor) {
@@ -99,8 +103,14 @@ public class RemoteUpdateManager {
                 if (!Files.exists(configDir)) Files.createDirectories(configDir);
                 Files.writeString(cacheFile, response.body(), StandardCharsets.UTF_8);
 
-                CsvImporter.Result result = CsvImporter.importFile(CACHE_FILENAME);
-                mainThreadExecutor.accept(() -> onComplete.accept(result));
+                // The fetch/write above is pure I/O with no shared state, so
+                // it's fine on this background thread. The import itself
+                // must not be - hop to the main thread before touching
+                // CooldownConfig's list.
+                mainThreadExecutor.accept(() -> {
+                    CsvImporter.Result result = CsvImporter.importFile(CACHE_FILENAME);
+                    onComplete.accept(result);
+                });
             } catch (Exception e) {
                 mainThreadExecutor.accept(() -> onError.accept("Update failed: " + e.getMessage()));
             }
