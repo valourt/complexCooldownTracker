@@ -55,6 +55,11 @@ public class HudLayoutConfig {
         public float moodSwingsBoxScale = 1.0f;
         public boolean moodSwingsBoxVisible = true;
 
+        public int grilledBoxX = 6;
+        public int grilledBoxY = 440;
+        public float grilledBoxScale = 1.0f;
+        public boolean grilledBoxVisible = true;
+
         public String backgroundColorHex = "1E1E1E";
         public int backgroundOpacityPercent = 85;
     }

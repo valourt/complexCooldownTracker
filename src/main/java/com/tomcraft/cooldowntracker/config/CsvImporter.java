@@ -96,10 +96,11 @@ public class CsvImporter {
                         ? get(fields, col, "displayname") : itemName;
                 String trigger = col.containsKey("trigger") && !get(fields, col, "trigger").isEmpty()
                         ? get(fields, col, "trigger") : "chat";
+                boolean isChatTrigger = "chat".equals(trigger);
                 boolean explicitPattern = col.containsKey("pattern") && !get(fields, col, "pattern").isEmpty();
                 String pattern = explicitPattern
                         ? get(fields, col, "pattern")
-                        : "(?i).*\\b" + java.util.regex.Pattern.quote(itemName) + "\\b.*";
+                        : (isChatTrigger ? "(?i).*\\b" + java.util.regex.Pattern.quote(itemName) + "\\b.*" : null);
                 double cooldown = Double.parseDouble(get(fields, col, "cooldownseconds"));
                 boolean enabled = true;
                 if (col.containsKey("enabled")) {
@@ -113,8 +114,9 @@ public class CsvImporter {
                 // Only set the fast literal-match path when we generated the
                 // pattern ourselves from a plain name - a user-supplied
                 // pattern might be genuine regex, so leave that on the
-                // (slower but general-purpose) regex path.
-                if (!explicitPattern) {
+                // (slower but general-purpose) regex path. Not relevant at
+                // all for non-chat triggers (totem/apples/vanilla_cooldown).
+                if (isChatTrigger && !explicitPattern) {
                     item.literalMatch = itemName.toLowerCase();
                 }
                 if (col.containsKey("color") && !get(fields, col, "color").isEmpty()) {

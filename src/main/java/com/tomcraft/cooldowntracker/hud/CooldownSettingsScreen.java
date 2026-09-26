@@ -23,6 +23,7 @@ public class CooldownSettingsScreen extends Screen {
     private ButtonWidget totemWatchToggle;
     private ButtonWidget snakeEyesToggle;
     private ButtonWidget moodSwingsToggle;
+    private ButtonWidget grilledToggle;
     private TextFieldWidget colorField;
     private TextFieldWidget opacityField;
 
@@ -96,6 +97,14 @@ public class CooldownSettingsScreen extends Screen {
                     layout.moodSwingsBoxVisible = !layout.moodSwingsBoxVisible;
                     HudLayoutConfig.save();
                     moodSwingsToggle.setMessage(moodSwingsLabel(layout));
+                }));
+        y += rowHeight;
+
+        grilledToggle = addDrawableChild(new ButtonWidget(centerX - 100, y, 200, 20,
+                grilledLabel(layout), b -> {
+                    layout.grilledBoxVisible = !layout.grilledBoxVisible;
+                    HudLayoutConfig.save();
+                    grilledToggle.setMessage(grilledLabel(layout));
                 }));
         y += rowHeight + 10;
 
@@ -188,13 +197,17 @@ public class CooldownSettingsScreen extends Screen {
         return new LiteralText("Mood Swings Box: " + (layout.moodSwingsBoxVisible ? "Shown" : "Hidden"));
     }
 
+    private static net.minecraft.text.Text grilledLabel(HudLayoutConfig.Layout layout) {
+        return new LiteralText("Grilled Box: " + (layout.grilledBoxVisible ? "Shown" : "Hidden"));
+    }
+
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         renderBackground(matrices);
         net.minecraft.client.gui.DrawableHelper.drawCenteredText(matrices, client.textRenderer, title, width / 2, height / 2 - 110, 0xFFFFFF);
 
         int centerX = width / 2;
-        int labelY = height / 2 - 90 + 24 * 7 + 10;
+        int labelY = height / 2 - 90 + 24 * 8 + 10;
         client.textRenderer.drawWithShadow(matrices, "Background color", centerX - 100, labelY, 0xFFAAAAAA);
         client.textRenderer.drawWithShadow(matrices, "Opacity %", centerX - 100, labelY + 34, 0xFFAAAAAA);
 

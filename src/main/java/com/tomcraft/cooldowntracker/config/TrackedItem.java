@@ -11,6 +11,17 @@ import java.util.regex.PatternSyntaxException;
  *  - "totem"                    -> fires when YOU pop a Totem of Undying
  *  - "golden_apple"             -> fires when YOU finish eating a Golden Apple
  *  - "enchanted_golden_apple"   -> fires when YOU finish eating an Enchanted Golden Apple
+ *  - "vanilla_cooldown"         -> fires when a HELD item matching `itemName` starts
+ *                                  vanilla's own item-cooldown sweep (the same system
+ *                                  ender pearls use) - for items with no chat/action-bar
+ *                                  signal at all, but that DO show the diagonal grey
+ *                                  cooldown swipe on their hotbar slot
+ *  - "projectile"               -> fires the moment a projectile entity YOU own spawns
+ *                                  while you're holding a HELD item matching `itemName` -
+ *                                  for items with no chat/action-bar signal AND a vanilla
+ *                                  cooldown sweep that's shared across multiple different
+ *                                  items (so unreliable on its own), but that DO fire a
+ *                                  real, visible projectile
  */
 public class TrackedItem {
     public String id;

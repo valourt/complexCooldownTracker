@@ -9,6 +9,75 @@ Everything before this point was numbered 1.0.0 through 2.5.0 under the old
 scheme - this file keeps those entries as-is for history, but 1.1.0 below
 picks up exactly where 2.5.0 left off (same code, renumbered).
 
+## 1.3.0
+
+- Added an **in-world floating label** for grilled players ("Grilled!
+  0:03"), in a light blue/cyan close to the color Barbeque's own chat
+  message uses - same billboarded-text technique already proven for the
+  Totem Watch label. If a player is somehow both on totem cooldown and
+  grilled at once, the two labels stack vertically instead of overlapping.
+
+## 1.2.9
+
+- Added a **Grilled** box, tracking who you've currently grilled with the
+  Barbeque enchantment - parsed straight from the chat message it
+  announces ("Barbeque | Grilled PlayerName!"), same proven approach as
+  Snake Eyes. Shows each grilled player and their remaining time
+  (5 seconds, per the item's own description), sorted soonest-expiring
+  first - can track multiple people at once if you grill more than one in
+  quick succession. Fully integrated like the other boxes: draggable/
+  resizable in `/cooldowns hud`, `/cooldowns togglegrilled`, Settings
+  toggle, and `/cooldowns setscale grilled <50-300>`.
+
+## 1.2.8
+
+- Added a new trigger type, **`projectile`**, for items like Shotgun that
+  have no chat/action-bar message AND whose vanilla cooldown sweep turned
+  out to be shared/unreliable (multiple different runes on this server
+  are all reskinned crossbows, sharing one cooldown state - firing one
+  doesn't actually block using another, so the sweep animation was purely
+  cosmetic and couldn't be trusted).
+  - Detects the moment a projectile entity YOU own spawns (confirmed via
+    Minecraft's real owner/shooter tracking on projectile entities, the
+    same mechanism used for damage attribution) while you're holding a
+    matching item - ties the trigger to the literal moment of firing
+    rather than any shared cooldown flag, sidestepping the "multiple
+    items share one base weapon" ambiguity entirely.
+  - Added via the same proven mixin class used for chat/action-bar/totem
+    detection - a fourth injection into `ClientPlayNetworkHandler`, this
+    time on `onEntitySpawn`.
+  - `/cooldowns addprojectile <seconds> <name>` to add one - only works
+    if using the item actually fires a real, visible projectile
+  - This is genuinely new, unproven territory (first time reading
+    projectile ownership data), so there's a real chance the first build
+    needs adjustment based on what actually happens in testing.
+
+## 1.2.7
+
+- Added a new trigger type, **`vanilla_cooldown`**, for items with no chat
+  or action-bar signal at all - detected instead via vanilla's own
+  built-in item cooldown system (the same one ender pearls use, shown as
+  a diagonal grey sweep on the item's hotbar slot). Watches whichever
+  matching item is currently held and fires the moment the sweep starts,
+  using your configured `cooldownSeconds` - the game doesn't need to tell
+  us the duration, just the moment it begins.
+  - `/cooldowns addvanilla <seconds> <name>` to add one (only works if you
+    actually see that grey sweep animation - if you don't, this trigger
+    type has nothing to detect)
+  - Also supported via CSV import with `trigger` set to `vanilla_cooldown`
+  - Known limitation: vanilla tracks this cooldown per raw item type, not
+    per custom NBT variant - if two different tracked items happen to
+    share the same underlying Minecraft item, they'd share this cooldown
+    state too
+
+## 1.2.6
+
+- **Fixed**: the auto-sync-on-join check only ever fired once per game
+  launch, not once per server join - if you rejoined without fully closing
+  and reopening Minecraft, the "already checked" flag was still set from
+  your first join, so it silently skipped every subsequent one. Now resets
+  whenever you leave a world, so it correctly re-checks on every join.
+
 ## 1.2.5
 
 - **Fixed a real crash**: `ConcurrentModificationException` in

@@ -22,7 +22,7 @@ public class HudEditScreen extends Screen {
     private static final float SCROLL_STEP = 0.1f;
     private static final String SAMPLE_TOAST_TEXT = "Example is ready!";
 
-    private enum Dragging {NONE, READY, COOLDOWN, TOAST, BACKPACK, TOTEM_WATCH, SNAKE_EYES, MOOD_SWINGS}
+    private enum Dragging {NONE, READY, COOLDOWN, TOAST, BACKPACK, TOTEM_WATCH, SNAKE_EYES, MOOD_SWINGS, GRILLED}
 
     private Dragging dragging = Dragging.NONE;
     private int dragOffsetX;
@@ -69,6 +69,10 @@ public class HudEditScreen extends Screen {
 
         CooldownHud.drawMoodSwingsBox(matrices, client, layout.moodSwingsBoxX, layout.moodSwingsBoxY, layout.moodSwingsBoxScale, layout);
         drawSingleValueOutline(matrices, CooldownHud.measureMoodSwingsBox(client), layout.moodSwingsBoxX, layout.moodSwingsBoxY, layout.moodSwingsBoxScale);
+
+        List<CooldownBoxes.Line> grilledLines = CooldownBoxes.getGrilledLines();
+        CooldownHud.drawBox(matrices, client, "Grilled", grilledLines, layout.grilledBoxX, layout.grilledBoxY, layout.grilledBoxScale, 0xFFFFB870, layout);
+        drawOutlineAround(matrices, BOX_OUTLINE, "Grilled", grilledLines, layout.grilledBoxX, layout.grilledBoxY, layout.grilledBoxScale);
 
         drawSampleToast(matrices, layout);
 
@@ -166,6 +170,12 @@ public class HudEditScreen extends Screen {
             dragOffsetY = (int) mouseY - layout.moodSwingsBoxY;
             return true;
         }
+        if (insideBox(mouseX, mouseY, "Grilled", CooldownBoxes.getGrilledLines(), layout.grilledBoxX, layout.grilledBoxY, layout.grilledBoxScale)) {
+            dragging = Dragging.GRILLED;
+            dragOffsetX = (int) mouseX - layout.grilledBoxX;
+            dragOffsetY = (int) mouseY - layout.grilledBoxY;
+            return true;
+        }
 
         return super.mouseClicked(mouseX, mouseY, button);
     }
@@ -206,6 +216,10 @@ public class HudEditScreen extends Screen {
             case MOOD_SWINGS:
                 layout.moodSwingsBoxX = newX;
                 layout.moodSwingsBoxY = newY;
+                break;
+            case GRILLED:
+                layout.grilledBoxX = newX;
+                layout.grilledBoxY = newY;
                 break;
             default:
                 break;
@@ -254,6 +268,11 @@ public class HudEditScreen extends Screen {
         }
         if (insideMoodSwingsBox(mouseX, mouseY, layout)) {
             layout.moodSwingsBoxScale = CooldownBoxes.clampScale(layout.moodSwingsBoxScale + (float) amount * SCROLL_STEP);
+            HudLayoutConfig.save();
+            return true;
+        }
+        if (insideBox(mouseX, mouseY, "Grilled", CooldownBoxes.getGrilledLines(), layout.grilledBoxX, layout.grilledBoxY, layout.grilledBoxScale)) {
+            layout.grilledBoxScale = CooldownBoxes.clampScale(layout.grilledBoxScale + (float) amount * SCROLL_STEP);
             HudLayoutConfig.save();
             return true;
         }

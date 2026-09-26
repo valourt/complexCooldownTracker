@@ -20,9 +20,10 @@ public class ChatCooldownListener {
     private static final String[] SUCCESS_SYMBOLS = {"\u2714", "\u2705", "\u2713"};
 
     public static void onChatLine(String plainMessage) {
-        // Independent of the item-cooldown gates below (it has its own
-        // specific pattern), so parse it unconditionally.
+        // Independent of the item-cooldown gates below (each has its own
+        // specific pattern), so parse these unconditionally.
         SnakeEyesTracker.onChatLine(plainMessage);
+        GrilledPlayerTracker.onChatLine(plainMessage);
 
         String lower = plainMessage.toLowerCase();
 

@@ -1,6 +1,6 @@
 # Cooldown Tracker (Fabric, 1.18.2)
 
-Current version: **1.2.5** — check `/cooldowns version` in-game to confirm
+Current version: **1.3.0** — check `/cooldowns version` in-game to confirm
 which build you're actually running, and see `CHANGELOG.md` for what
 changed in each version.
 
@@ -49,7 +49,7 @@ update that one line.
 
 ## 3. Moving the HUD boxes
 
-There are six boxes:
+There are seven boxes:
 - **Ready** — every tracked item you currently own that isn't on cooldown,
   in white (or a custom color you've set), up to 5 rows per column,
   wrapping into a new column as needed.
@@ -75,6 +75,13 @@ There are six boxes:
 - **Mood Swings** — your current mood (Aggressive/Playful/Lazy),
   color-coded per mood. Auto-hides unless you're wearing the Mood Swings
   boots.
+- **Grilled** — who you've currently grilled with the Barbeque
+  enchantment, parsed straight from the chat message it announces, with
+  each player's remaining time (5 seconds). Can show several people at
+  once if you grill more than one in quick succession, sorted
+  soonest-expiring first. Also shows a light blue/cyan floating "Grilled!"
+  label above their head in-world while active - stacks above the Totem
+  Watch label if a player happens to have both at once.
 
 Each starts in the top-left corner. To reposition/resize/hide them, or
 restyle the background, or move the ready pop-up: run `/cooldowns hud`
@@ -169,6 +176,46 @@ and builds a chat pattern that just looks for that name anywhere in a chat
 line. If the real chat message doesn't contain the item's name verbatim,
 edit `cooldowns.json` afterwards and fix that one entry's `pattern`.
 
+### Items with no chat message at all
+
+Some items (like totem/apples) never send a chat or action-bar message
+when used. If you check the item's hotbar slot and see a diagonal grey
+"sweep" animation while it's on cooldown (the same one vanilla uses for
+the 1-second ender pearl cooldown), you can track it via that instead:
+
+```
+/cooldowns addvanilla 45 Shotgun
+```
+
+This only works if that sweep animation genuinely reflects that specific
+item's real cooldown. It's worth checking: if several different items on
+the server are reskinned versions of the same base weapon (e.g. multiple
+"runes" that are all crossbows), they'll all show the sweep simultaneously
+whenever ANY of them is used — try firing one, then immediately firing a
+different one while the sweep is showing. If the second one actually
+works, the sweep is shared/cosmetic and `addvanilla` won't give reliable
+results for those items.
+
+If that's the case but the item fires a real, visible projectile (an
+arrow, snowball, etc. that actually flies through the air), there's
+another option:
+
+```
+/cooldowns addprojectile 45 Shotgun
+```
+
+This detects the moment a projectile you own spawns while you're holding
+a matching item, using Minecraft's own projectile ownership tracking
+(the same data used for damage attribution) - since it's tied to your
+literal act of firing rather than any shared cooldown flag, it isn't
+affected by multiple items sharing the same base weapon.
+
+If an item has no chat/action-bar message, an unreliable cooldown sweep,
+and doesn't fire a visible projectile either, there's currently no
+reliable way for this mod to detect its use - your best bet at that point
+is asking whoever runs the server if they'd add a chat or action-bar
+message for it, matching how most items already work.
+
 ### Bulk-entering hundreds of items (no Excel needed)
 
 A CSV is just a plain text file — comma-separated values, one item per line.
@@ -212,10 +259,12 @@ Other commands:
 - `/cooldowns version` — confirm which build you're running
 - `/cooldowns list` — see how many items are tracked; `/cooldowns list <search>` to find a specific one by name
 - `/cooldowns remove <id>` — delete an entry
+- `/cooldowns addvanilla <seconds> <name>` — track an item with no chat/action-bar message, via vanilla's own item-cooldown sweep (see above)
+- `/cooldowns addprojectile <seconds> <name>` — track an item with no message and an unreliable cooldown sweep, via ownership of a fired projectile (see above)
 - `/cooldowns hud` — open the drag-to-reposition HUD editor
 - `/cooldowns settings` — open the settings GUI directly
-- `/cooldowns togglereadybox` / `/cooldowns togglecooldownbox` / `/cooldowns togglebackpackbox` / `/cooldowns toggletotemwatch` / `/cooldowns togglesnakeeyes` / `/cooldowns togglemoodswings` / `/cooldowns togglepopup` — show/hide a box or the ready pop-up
-- `/cooldowns setscale <ready|cooldown|backpack|totem|snake|mood> <50-300>` — set a box's text/size as a percentage
+- `/cooldowns togglereadybox` / `/cooldowns togglecooldownbox` / `/cooldowns togglebackpackbox` / `/cooldowns toggletotemwatch` / `/cooldowns togglesnakeeyes` / `/cooldowns togglemoodswings` / `/cooldowns togglegrilled` / `/cooldowns togglepopup` — show/hide a box or the ready pop-up
+- `/cooldowns setscale <ready|cooldown|backpack|totem|snake|mood|grilled> <50-300>` — set a box's text/size as a percentage
 - `/cooldowns setcolor <id> <hex>` — give one item a fixed color (e.g. `FF8800`), overriding the automatic urgency coloring
 - `/cooldowns setbgcolor <hex>` / `/cooldowns setopacity <0-100>` — restyle the HUD panels' background (`setopacity 0` gives clean text with no panel at all)
 - `/cooldowns importcsv [file]` — bulk-import from a CSV (see above)
@@ -265,6 +314,19 @@ directly); there's no server component or central service involved.
 - **Golden/Enchanted Golden Apple**: a mixin taps
   `LivingEntity.eatFood` (as overridden in `PlayerEntity`), which fires the
   instant you finish eating, before the game applies the food's effects.
+- **`vanilla_cooldown` items**: watches the cooldown-start transition on
+  whatever underlying item type is currently held (checked via
+  `player.getItemCooldownManager().isCoolingDown(item)` - vanilla's own
+  built-in cooldown tracker, the one that draws the diagonal grey sweep),
+  and attributes it to whichever matching tracked item was actually held
+  at that exact moment. Using your configured duration rather than
+  anything read from the game.
+- **`projectile` items**: a mixin taps `onEntitySpawn` (a fourth injection
+  into the same proven-working `ClientPlayNetworkHandler` class) and looks
+  up the newly-spawned entity's owner - if it's you, and you're holding a
+  matching item, that item's cooldown starts. Doesn't rely on vanilla's
+  cooldown system at all, so it isn't affected by multiple items sharing
+  the same base weapon.
 
 If Complex Gaming Factions ever adds a chat/action-bar message for totems or
 apples, that'd actually be more reliable than the event hooks above — let me

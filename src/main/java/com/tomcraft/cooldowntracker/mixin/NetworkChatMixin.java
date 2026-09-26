@@ -3,10 +3,12 @@ package com.tomcraft.cooldowntracker.mixin;
 import com.tomcraft.cooldowntracker.listener.ChatCooldownListener;
 import com.tomcraft.cooldowntracker.listener.MoodSwingsTracker;
 import com.tomcraft.cooldowntracker.listener.OtherPlayerTotemTracker;
+import com.tomcraft.cooldowntracker.listener.ProjectileFireTracker;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityStatusS2CPacket;
 import net.minecraft.network.packet.s2c.play.GameMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.OverlayMessageS2CPacket;
@@ -32,6 +34,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  * genuinely different packet from regular chat (OverlayMessageS2CPacket,
  * not GameMessageS2CPacket), needed for effects some items announce there
  * instead of in chat (e.g. Mood Swings).
+ *
+ * Also hooks onEntitySpawn, at TAIL (after vanilla has actually created and
+ * added the entity to the world, since the packet alone is just raw data) -
+ * for items with a real, visible projectile but no chat/action-bar signal
+ * and an unreliable vanilla cooldown sweep (trigger "projectile").
  */
 @Mixin(ClientPlayNetworkHandler.class)
 public class NetworkChatMixin {
@@ -60,6 +67,17 @@ public class NetworkChatMixin {
 
         String name = ((PlayerEntity) entity).getGameProfile().getName();
         OtherPlayerTotemTracker.onOtherPlayerTotemPop(name);
+    }
+
+    @Inject(method = "onEntitySpawn", at = @At("TAIL"))
+    private void cooldowntracker$onEntitySpawn(EntitySpawnS2CPacket packet, CallbackInfo ci) {
+        MinecraftClient client = MinecraftClient.getInstance();
+        if (client.world == null) return;
+
+        Entity entity = client.world.getEntityById(packet.getId());
+        if (entity != null) {
+            ProjectileFireTracker.onOwnedProjectileSpawn(entity);
+        }
     }
 }
 

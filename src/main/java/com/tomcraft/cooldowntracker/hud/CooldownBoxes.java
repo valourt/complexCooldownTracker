@@ -77,6 +77,7 @@ public class CooldownBoxes {
     private static List<Line> cachedCooldownLines = new ArrayList<>();
     private static List<Line> cachedReadyLines = new ArrayList<>();
     private static List<Line> cachedOtherTotemLines = new ArrayList<>();
+    private static List<Line> cachedGrilledLines = new ArrayList<>();
     private static final long RECOMPUTE_INTERVAL_MS = 200; // 5x/sec is plenty for a mm:ss display
 
     public static List<Line> getCooldownLines() {
@@ -92,6 +93,11 @@ public class CooldownBoxes {
     public static List<Line> getOtherTotemLines() {
         recomputeIfNeeded();
         return cachedOtherTotemLines;
+    }
+
+    public static List<Line> getGrilledLines() {
+        recomputeIfNeeded();
+        return cachedGrilledLines;
     }
 
     private static void recomputeIfNeeded() {
@@ -135,6 +141,17 @@ public class CooldownBoxes {
                     otherTotems.add(new Line(e.getKey(), color, " " + formatTime(remaining), color));
                 });
         cachedOtherTotemLines = otherTotems;
+
+        List<Line> grilled = new ArrayList<>();
+        java.util.Map<String, Long> grilledActive = com.tomcraft.cooldowntracker.listener.GrilledPlayerTracker.getActiveEndTimes();
+        grilledActive.entrySet().stream()
+                .sorted(Comparator.comparingLong(java.util.Map.Entry::getValue))
+                .forEach(e -> {
+                    long remaining = Math.max(0, e.getValue() - now2);
+                    int color = urgencyColor(remaining);
+                    grilled.add(new Line(e.getKey(), color, " " + formatTime(remaining), color));
+                });
+        cachedGrilledLines = grilled;
     }
 
     private static int urgencyColor(long remainingMillis) {

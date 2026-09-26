@@ -14,6 +14,7 @@ import com.tomcraft.cooldowntracker.hud.ReadyToastManager;
 import com.tomcraft.cooldowntracker.hud.TotemWatchWorldRenderer;
 import com.tomcraft.cooldowntracker.listener.GameStatePoller;
 import com.tomcraft.cooldowntracker.listener.OnlinePlayerCache;
+import com.tomcraft.cooldowntracker.listener.VanillaCooldownPoller;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 
@@ -36,9 +37,15 @@ public class CooldownTrackerClient implements ClientModInitializer {
         BackpackTracker.register();
         TotemWatchWorldRenderer.register();
         ArmorEffectTracker.register();
+        VanillaCooldownPoller.register();
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
-            if (!autoUpdateChecked && client.player != null) {
+            // Resets every time you leave a world/server (player becomes
+            // null again), so the check fires on every join rather than
+            // just once for the entire game session.
+            if (client.player == null) {
+                autoUpdateChecked = false;
+            } else if (!autoUpdateChecked) {
                 autoUpdateChecked = true;
                 if (RemoteUpdateManager.hasUpdateUrl()) {
                     RemoteUpdateManager.update(
@@ -87,6 +94,11 @@ public class CooldownTrackerClient implements ClientModInitializer {
             while (CooldownKeybinds.toggleMoodSwingsBoxKey.wasPressed()) {
                 HudLayoutConfig.Layout layout = HudLayoutConfig.get();
                 layout.moodSwingsBoxVisible = !layout.moodSwingsBoxVisible;
+                HudLayoutConfig.save();
+            }
+            while (CooldownKeybinds.toggleGrilledBoxKey.wasPressed()) {
+                HudLayoutConfig.Layout layout = HudLayoutConfig.get();
+                layout.grilledBoxVisible = !layout.grilledBoxVisible;
                 HudLayoutConfig.save();
             }
         });

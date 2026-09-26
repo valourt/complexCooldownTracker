@@ -22,6 +22,13 @@ import static net.fabricmc.fabric.api.client.command.v1.ClientCommandManager.lit
  * /cooldowns version          - show the running mod version
  * /cooldowns list [search]     - show item count, or search by id/name (capped to avoid chat spam)
  * /cooldowns additem <seconds> <name>  - add/update by exact item name (recommended - simplest)
+ * /cooldowns addvanilla <seconds> <name> - add an item with NO chat/action-bar signal, detected
+ *                                          instead via vanilla's own item-cooldown sweep (only
+ *                                          works if you actually see that grey diagonal swipe)
+ * /cooldowns addprojectile <seconds> <name> - add an item with NO chat/action-bar signal AND an
+ *                                          unreliable/shared vanilla cooldown sweep, detected
+ *                                          instead via ownership of a fired projectile entity
+ *                                          (only works if using it fires a real, visible shot)
  * /cooldowns addrune <id> <seconds> <regex>  - add/update with a custom regex + id
  * /cooldowns remove <id>       - remove a tracked item
  * /cooldowns importcsv [file]  - bulk-import items from a CSV (default: cooldowns.csv)
@@ -33,8 +40,9 @@ import static net.fabricmc.fabric.api.client.command.v1.ClientCommandManager.lit
  * /cooldowns toggletotemwatch    - show/hide the other-players' totem cooldown box
  * /cooldowns togglesnakeeyes      - show/hide the Snake Eyes current-buff box
  * /cooldowns togglemoodswings     - show/hide the Mood Swings current-mood box
+ * /cooldowns togglegrilled       - show/hide the Grilled (Barbeque targets) box
  * /cooldowns togglepopup        - show/hide the ready pop-up
- * /cooldowns setscale <ready|cooldown|backpack|totem|snake|mood> <50-300> - set a box's text/size as a percentage
+ * /cooldowns setscale <ready|cooldown|backpack|totem|snake|mood|grilled> <50-300> - set a box's text/size as a percentage
  * /cooldowns setcolor <id> <hex> - give one item a fixed display color, e.g. FF8800
  * /cooldowns setbgcolor <hex>   - set the HUD panels' background color
  * /cooldowns setopacity <0-100> - set the HUD panels' background opacity
@@ -133,6 +141,14 @@ public class CooldownCommands {
                                     "[CooldownTracker] Mood Swings box " + (layout.moodSwingsBoxVisible ? "shown" : "hidden") + "."));
                             return 1;
                         }))
+                        .then(literal("togglegrilled").executes(ctx -> {
+                            HudLayoutConfig.Layout layout = HudLayoutConfig.get();
+                            layout.grilledBoxVisible = !layout.grilledBoxVisible;
+                            HudLayoutConfig.save();
+                            ctx.getSource().sendFeedback(new LiteralText(
+                                    "[CooldownTracker] Grilled box " + (layout.grilledBoxVisible ? "shown" : "hidden") + "."));
+                            return 1;
+                        }))
                         .then(literal("togglepopup").executes(ctx -> {
                             HudLayoutConfig.Layout layout = HudLayoutConfig.get();
                             layout.toastVisible = !layout.toastVisible;
@@ -163,9 +179,11 @@ public class CooldownCommands {
                                                         layout.snakeEyesBoxScale = scale;
                                                     } else if (box.startsWith("mood")) {
                                                         layout.moodSwingsBoxScale = scale;
+                                                    } else if (box.startsWith("grilled")) {
+                                                        layout.grilledBoxScale = scale;
                                                     } else {
                                                         ctx.getSource().sendFeedback(new LiteralText(
-                                                                "[CooldownTracker] Unknown box '" + box + "' - use 'ready', 'cooldown', 'backpack', 'totem', 'snake', or 'mood'."));
+                                                                "[CooldownTracker] Unknown box '" + box + "' - use 'ready', 'cooldown', 'backpack', 'totem', 'snake', 'mood', or 'grilled'."));
                                                         return 0;
                                                     }
                                                     HudLayoutConfig.save();
@@ -236,6 +254,51 @@ public class CooldownCommands {
                                                     CooldownConfig.addOrUpdate(item);
                                                     ctx.getSource().sendFeedback(new LiteralText(
                                                             "[CooldownTracker] Added '" + name + "' (" + seconds + "s)."));
+                                                    return 1;
+                                                }))))
+                        .then(literal("addvanilla")
+                                .then(argument("seconds", DoubleArgumentType.doubleArg(0))
+                                        .then(argument("name", StringArgumentType.greedyString())
+                                                .executes(ctx -> {
+                                                    double seconds = DoubleArgumentType.getDouble(ctx, "seconds");
+                                                    String name = getString(ctx, "name");
+                                                    String id = slugify(name);
+                                                    if (RESERVED_IDS.contains(id)) {
+                                                        ctx.getSource().sendFeedback(new LiteralText(
+                                                                "[CooldownTracker] '" + name + "' collides with the built-in '" + id
+                                                                        + "' entry - pick a different name."));
+                                                        return 0;
+                                                    }
+                                                    TrackedItem item = new TrackedItem(id, name, "vanilla_cooldown", null, seconds);
+                                                    item.itemName = name;
+                                                    CooldownConfig.addOrUpdate(item);
+                                                    ctx.getSource().sendFeedback(new LiteralText(
+                                                            "[CooldownTracker] Added '" + name + "' (" + seconds + "s) - tracked via "
+                                                                    + "vanilla's own item-cooldown sweep, not chat. Make sure you actually "
+                                                                    + "see that grey diagonal sweep on its hotbar slot when used, or this "
+                                                                    + "won't detect anything."));
+                                                    return 1;
+                                                }))))
+                        .then(literal("addprojectile")
+                                .then(argument("seconds", DoubleArgumentType.doubleArg(0))
+                                        .then(argument("name", StringArgumentType.greedyString())
+                                                .executes(ctx -> {
+                                                    double seconds = DoubleArgumentType.getDouble(ctx, "seconds");
+                                                    String name = getString(ctx, "name");
+                                                    String id = slugify(name);
+                                                    if (RESERVED_IDS.contains(id)) {
+                                                        ctx.getSource().sendFeedback(new LiteralText(
+                                                                "[CooldownTracker] '" + name + "' collides with the built-in '" + id
+                                                                        + "' entry - pick a different name."));
+                                                        return 0;
+                                                    }
+                                                    TrackedItem item = new TrackedItem(id, name, "projectile", null, seconds);
+                                                    item.itemName = name;
+                                                    CooldownConfig.addOrUpdate(item);
+                                                    ctx.getSource().sendFeedback(new LiteralText(
+                                                            "[CooldownTracker] Added '" + name + "' (" + seconds + "s) - tracked via "
+                                                                    + "a fired projectile you own, not chat or vanilla's cooldown sweep. "
+                                                                    + "Only works if using it actually fires a real, visible projectile."));
                                                     return 1;
                                                 }))))
                         .then(literal("fixbuiltins").executes(ctx -> runFixBuiltins(ctx)))

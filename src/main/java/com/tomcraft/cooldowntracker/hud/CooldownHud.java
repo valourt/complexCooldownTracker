@@ -25,6 +25,7 @@ public class CooldownHud {
     private static final int TOTEM_WATCH_TITLE_COLOR = 0xFF8FD6FF;
     private static final int SNAKE_EYES_TITLE_COLOR = 0xFFFF9E9E;
     private static final int MOOD_SWINGS_TITLE_COLOR = 0xFFB8F5C7;
+    private static final int GRILLED_TITLE_COLOR = 0xFFFFB870;
 
     public static void register() {
         HudRenderCallback.EVENT.register(CooldownHud::render);
@@ -57,6 +58,10 @@ public class CooldownHud {
         }
         if (layout.moodSwingsBoxVisible && ArmorEffectTracker.isWearingMoodSwings()) {
             drawMoodSwingsBox(matrices, client, layout.moodSwingsBoxX, layout.moodSwingsBoxY, layout.moodSwingsBoxScale, layout);
+        }
+        if (layout.grilledBoxVisible) {
+            drawBox(matrices, client, "Grilled", CooldownBoxes.getGrilledLines(),
+                    layout.grilledBoxX, layout.grilledBoxY, layout.grilledBoxScale, GRILLED_TITLE_COLOR, layout);
         }
 
         if (layout.toastVisible) {

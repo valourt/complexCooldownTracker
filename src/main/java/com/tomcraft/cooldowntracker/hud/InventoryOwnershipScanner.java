@@ -137,7 +137,7 @@ public class InventoryOwnershipScanner {
      * rather than the item's own display name. Package-visible so
      * ArmorEffectTracker can reuse this instead of duplicating it.
      */
-    static List<String> getLoreLines(ItemStack stack) {
+    public static List<String> getLoreLines(ItemStack stack) {
         List<String> lines = new ArrayList<>();
         NbtCompound display = stack.getSubNbt("display");
         if (display == null || !display.contains("Lore", NbtElement.LIST_TYPE)) {
