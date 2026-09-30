@@ -24,6 +24,7 @@ public class CooldownSettingsScreen extends Screen {
     private ButtonWidget snakeEyesToggle;
     private ButtonWidget moodSwingsToggle;
     private ButtonWidget grilledToggle;
+    private ButtonWidget potionsToggle;
     private TextFieldWidget colorField;
     private TextFieldWidget opacityField;
 
@@ -105,6 +106,14 @@ public class CooldownSettingsScreen extends Screen {
                     layout.grilledBoxVisible = !layout.grilledBoxVisible;
                     HudLayoutConfig.save();
                     grilledToggle.setMessage(grilledLabel(layout));
+                }));
+        y += rowHeight;
+
+        potionsToggle = addDrawableChild(new ButtonWidget(centerX - 100, y, 200, 20,
+                potionsLabel(layout), b -> {
+                    layout.potionsBoxVisible = !layout.potionsBoxVisible;
+                    HudLayoutConfig.save();
+                    potionsToggle.setMessage(potionsLabel(layout));
                 }));
         y += rowHeight + 10;
 
@@ -201,13 +210,17 @@ public class CooldownSettingsScreen extends Screen {
         return new LiteralText("Grilled Box: " + (layout.grilledBoxVisible ? "Shown" : "Hidden"));
     }
 
+    private static net.minecraft.text.Text potionsLabel(HudLayoutConfig.Layout layout) {
+        return new LiteralText("Potions Box: " + (layout.potionsBoxVisible ? "Shown" : "Hidden"));
+    }
+
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         renderBackground(matrices);
         net.minecraft.client.gui.DrawableHelper.drawCenteredText(matrices, client.textRenderer, title, width / 2, height / 2 - 110, 0xFFFFFF);
 
         int centerX = width / 2;
-        int labelY = height / 2 - 90 + 24 * 8 + 10;
+        int labelY = height / 2 - 90 + 24 * 9 + 10;
         client.textRenderer.drawWithShadow(matrices, "Background color", centerX - 100, labelY, 0xFFAAAAAA);
         client.textRenderer.drawWithShadow(matrices, "Opacity %", centerX - 100, labelY + 34, 0xFFAAAAAA);
 

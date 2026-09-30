@@ -1,6 +1,7 @@
 package com.tomcraft.cooldowntracker.hud;
 
 import com.tomcraft.cooldowntracker.config.CooldownConfig;
+import com.tomcraft.cooldowntracker.config.RuneStyleCache;
 import com.tomcraft.cooldowntracker.config.TrackedItem;
 import com.tomcraft.cooldowntracker.cooldown.CooldownManager;
 import net.minecraft.client.font.TextRenderer;
@@ -31,6 +32,7 @@ public class CooldownBoxes {
     public static final int MAX_SCALE_PERCENT = 300;
 
     public static final int READY_DEFAULT_COLOR = 0xFFFFFFFF;
+    public static final int ICON_SLOT = 10;
 
     public static class Line {
         public final String text;
@@ -38,6 +40,8 @@ public class CooldownBoxes {
         /** Name-portion length in characters, for split-color rendering - equals text.length() when there's no separate suffix (Ready lines). */
         public final int nameLength;
         public final int suffixColor;
+        /** Server-provided icon, auto-learned from the game's own text - null when not (yet) known. */
+        public RuneStyleCache.Entry icon;
 
         /** Ready lines: no separate suffix, whole text uses one color. */
         public Line(String text, int color) {
@@ -112,10 +116,12 @@ public class CooldownBoxes {
                     CooldownManager.Active active = e.getValue();
                     TrackedItem source = CooldownConfig.findById(e.getKey());
                     int urgency = urgencyColor(active.remainingMillis());
-                    int nameColor = (source != null && source.colorArgb != null) ? source.colorArgb : urgency;
+                    int nameColor = (source != null && source.colorArgb != null) ? source.colorArgb : RuneStyleCache.colorOr(active.displayName, urgency);
                     String name = shortName(active.displayName);
                     String suffix = " " + formatTime(active.remainingMillis());
-                    return new Line(name, nameColor, suffix, urgency);
+                    Line built = new Line(name, nameColor, suffix, urgency);
+                    built.icon = RuneStyleCache.get(active.displayName);
+                    return built;
                 })
                 .collect(java.util.stream.Collectors.toList());
 
@@ -124,7 +130,7 @@ public class CooldownBoxes {
             if (!item.enabled) continue;
             if (!InventoryOwnershipScanner.isOwned(item.id)) continue;
             if (CooldownManager.getActive().containsKey(item.id)) continue;
-            int color = item.colorArgb != null ? item.colorArgb : READY_DEFAULT_COLOR;
+            int color = item.colorArgb != null ? item.colorArgb : RuneStyleCache.colorOr(item.displayName, READY_DEFAULT_COLOR);
             ready.add(new Line(shortName(item.displayName), color));
         }
         ready.sort(Comparator.comparing(l -> l.text.toLowerCase()));
@@ -164,7 +170,7 @@ public class CooldownBoxes {
         long totalSeconds = (millis + 999) / 1000; // round up so it doesn't flash "0s"
         long minutes = totalSeconds / 60;
         long seconds = totalSeconds % 60;
-        return String.format("%d:%02d", minutes, seconds);
+        return minutes > 0 ? minutes + "m " + seconds + "s" : seconds + "s";
     }
 
     /**
@@ -208,12 +214,21 @@ public class CooldownBoxes {
 
     public static int[] columnWidths(TextRenderer tr, List<Line> lines, int columns) {
         int[] widths = new int[columns];
+        int slot = slotWidth(lines);
         for (int i = 0; i < lines.size(); i++) {
             int col = i / MAX_ROWS_PER_COLUMN;
-            int w = MARKER_SIZE + MARKER_GAP + tr.getWidth(CooldownFont.styled(lines.get(i).text, CooldownFont.REGULAR));
+            int w = slot + MARKER_GAP + tr.getWidth(CooldownFont.styled(lines.get(i).text, CooldownFont.REGULAR));
             widths[col] = Math.max(widths[col], w);
         }
         return widths;
+    }
+
+    /** Width reserved before each row's text: an icon slot if any row has an icon, else just the small marker square. */
+    public static int slotWidth(List<Line> lines) {
+        for (Line l : lines) {
+            if (l.icon != null && l.icon.glyph != null && !l.icon.glyph.isEmpty()) return ICON_SLOT;
+        }
+        return MARKER_SIZE;
     }
 
     public static float clampScale(float scale) {

@@ -1,6 +1,7 @@
 package com.tomcraft.cooldowntracker.hud;
 
 import com.tomcraft.cooldowntracker.config.CooldownConfig;
+import com.tomcraft.cooldowntracker.config.RuneStyleLearner;
 import com.tomcraft.cooldowntracker.config.TextMatch;
 import com.tomcraft.cooldowntracker.config.TrackedItem;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -10,6 +11,7 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 
 import java.util.ArrayList;
@@ -76,8 +78,10 @@ public class InventoryOwnershipScanner {
             if (stack == null || stack.isEmpty()) continue;
 
             namesInInventory.add(TextMatch.normalize(stack.getName().getString()));
-            for (String loreLine : getLoreLines(stack)) {
-                namesInInventory.add(TextMatch.normalize(loreLine));
+            RuneStyleLearner.learnFromItemText(stack.getName());
+            for (Text loreText : getLoreTexts(stack)) {
+                namesInInventory.add(TextMatch.normalize(loreText.getString()));
+                RuneStyleLearner.learnFromItemText(loreText);
             }
 
             if (stack.isOf(Items.TOTEM_OF_UNDYING)) hasTotem = true;
@@ -137,8 +141,8 @@ public class InventoryOwnershipScanner {
      * rather than the item's own display name. Package-visible so
      * ArmorEffectTracker can reuse this instead of duplicating it.
      */
-    public static List<String> getLoreLines(ItemStack stack) {
-        List<String> lines = new ArrayList<>();
+    public static List<Text> getLoreTexts(ItemStack stack) {
+        List<Text> lines = new ArrayList<>();
         NbtCompound display = stack.getSubNbt("display");
         if (display == null || !display.contains("Lore", NbtElement.LIST_TYPE)) {
             return lines;
@@ -148,10 +152,18 @@ public class InventoryOwnershipScanner {
             String json = lore.getString(i);
             try {
                 Text text = Text.Serializer.fromJson(json);
-                lines.add(text != null ? text.getString() : json);
+                lines.add(text != null ? text : new LiteralText(json));
             } catch (Exception e) {
-                lines.add(json);
+                lines.add(new LiteralText(json));
             }
+        }
+        return lines;
+    }
+
+    public static List<String> getLoreLines(ItemStack stack) {
+        List<String> lines = new ArrayList<>();
+        for (Text t : getLoreTexts(stack)) {
+            lines.add(t.getString());
         }
         return lines;
     }

@@ -1,5 +1,6 @@
 package com.tomcraft.cooldowntracker.mixin;
 
+import com.tomcraft.cooldowntracker.config.RuneStyleLearner;
 import com.tomcraft.cooldowntracker.listener.ChatCooldownListener;
 import com.tomcraft.cooldowntracker.listener.MoodSwingsTracker;
 import com.tomcraft.cooldowntracker.listener.OtherPlayerTotemTracker;
@@ -12,6 +13,7 @@ import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityStatusS2CPacket;
 import net.minecraft.network.packet.s2c.play.GameMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.OverlayMessageS2CPacket;
+import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -47,7 +49,9 @@ public class NetworkChatMixin {
 
     @Inject(method = "onGameMessage", at = @At("HEAD"))
     private void cooldowntracker$onGameMessage(GameMessageS2CPacket packet, CallbackInfo ci) {
-        ChatCooldownListener.onChatLine(packet.getMessage().getString());
+        Text message = packet.getMessage();
+        ChatCooldownListener.onChatLine(message.getString());
+        RuneStyleLearner.learnFromChat(message);
     }
 
     @Inject(method = "onOverlayMessage", at = @At("HEAD"))

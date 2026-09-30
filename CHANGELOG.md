@@ -9,6 +9,116 @@ Everything before this point was numbered 1.0.0 through 2.5.0 under the old
 scheme - this file keeps those entries as-is for history, but 1.1.0 below
 picks up exactly where 2.5.0 left off (same code, renumbered).
 
+## 1.3.5
+
+- **Replaced the Resistance-only box with a general "Potions" box**,
+  showing every currently active status effect (not just Resistance) with
+  its tier and remaining time - color-coded green for beneficial effects,
+  red for harmful ones. This both resolves the "Resistance box doesn't
+  show" issue reported after 1.3.3 (root cause wasn't confirmed before
+  this rewrite, but showing everything sidesteps whatever the narrow
+  single-effect logic was doing wrong) and is more broadly useful than the
+  original single-purpose version.
+  - Renamed the box's commands/settings accordingly:
+    `/cooldowns togglepotions` (was `toggleresistance`),
+    `/cooldowns setscale potions <50-300>` (still accepts `resist` as a
+    shorthand too)
+  - The removed diagnostic logging from 1.3.4 (a temporary debug-only
+    build) is gone in this version.
+
+## 1.3.9
+
+- **Fixed**: an ability that targets another player by name (e.g.
+  Lovestruck's "Making you and Cow gravitate towards each other!") was
+  wrongly skipped whenever the target happened to share a name with an
+  actual online player - the "someone else's proc" filter didn't
+  distinguish "your own activation names a target" from "someone else's
+  broadcast names its actor". Now only applies that filter when the line
+  doesn't also say "you"/"your", since your own activation message is
+  always second-person while a genuine other-player broadcast never is.
+
+## 1.3.8
+
+- **Look overhaul**, modelled on a reference layout:
+  - Times are compact everywhere (boxes, potions, world labels): "2m 44s"
+    and "35s" instead of "2:44" and "0:35".
+  - Panels are a crisp, thin-outlined rectangle instead of the soft
+    rounded one (background opacity 0 still means no panel at all). Only
+    the ready pop-up keeps its rounded card.
+  - The Ready list is now small plain coloured text ("Green Shell Ready")
+    - no panel, no title, no markers. Nothing ready = nothing drawn
+    in-game (a placeholder still shows in the HUD editor so you can find
+    and move it; scroll over it there to shrink it).
+- **Auto-picked rune icons and colours**, read from the game's own styled
+  text instead of being hand-entered:
+  - Item names/lore are read whenever your inventory changes (the icon
+    and tier carry the rune's theme colour in tooltips) and chat lines of
+    the form "<icon> Name V | ..." are read as they arrive - yours or other
+    players' (the name colour there is the rune's theme colour).
+  - Icons show next to rune names in the On Cooldown panel; colours tint
+    rune names in both lists. A colour you set yourself (`setcolor` or a
+    CSV `color` column) always wins over an auto-picked one.
+  - Learned styles live in `config/cooldowntracker/rune_styles.json`,
+    deliberately separate from `cooldowns.json` so CSV imports and remote
+    sync (which replace whole entries) can never wipe them. Delete that
+    file to relearn from scratch.
+  - New territory: reads styled text (font/colour per segment) for the
+    first time. Icons rely on the server's resource pack glyphs rendering
+    in the default font.
+
+## 1.3.7
+
+- **Found and fixed the actual cause**: the Potions box's default position
+  (`Y=500`) was almost certainly rendering below the visible screen area
+  for your GUI Scale setting - the diagnostic log confirmed detection and
+  data were both correct the whole time (5 real effects detected, 5 lines
+  built, box marked visible), so this was a pure positioning issue, not a
+  detection bug. Changed the default to start a second column near the
+  top-right (`X=200, Y=6`) instead of continuing to stack every new box
+  further down the screen indefinitely - safer regardless of resolution or
+  GUI scale.
+  - **Important**: this only changes the default for fresh installs -
+    your existing `hud_layout.json` already has the old `Y=500` saved to
+    disk from running 1.3.5/1.3.6, and that saved value overrides the new
+    default. Manually edit `config/cooldowntracker/hud_layout.json`,
+    change `"potionsBoxY": 500` to `"potionsBoxY": 6` and
+    `"potionsBoxX": 6` to `"potionsBoxX": 200` (only the Potions box's own
+    line - leave every other box's position alone), then relaunch.
+  - Removed the diagnostic logging added in 1.3.6 now that this is
+    resolved.
+
+## 1.3.3
+
+- Added a **Resistance** box - a genuinely simple, fully reliable tracker
+  since Resistance is a real vanilla status effect the game already
+  tracks, unlike most of this mod's other detection methods. Shown in a
+  deliberately loud red/warning color throughout (not just the title),
+  since the whole point is to be hard to miss before you accidentally eat
+  a golden/enchanted golden apple while you're already resistant from a
+  previous one. Auto-hides the instant the effect ends. Fully integrated
+  like every other box: draggable/resizable in `/cooldowns hud`,
+  `/cooldowns toggleresistance`, Settings toggle, and
+  `/cooldowns setscale resistance <50-300>`.
+
+## 1.3.2
+
+- **Fixed**: debuffs someone else applies to you (e.g. Sneeze's "You are no
+  longer covered in mucus" when its effect wears off) were wrongly
+  starting your own cooldown for that item - the message uses "You" and
+  a genuine success checkmark, so it passed every existing filter despite
+  not mentioning another player by name at all. Messages containing
+  "no longer" are now excluded, same principle as the existing "on
+  cooldown" filter: anything describing an effect ending shouldn't ever
+  start a cooldown, regardless of which item it's about.
+
+## 1.3.1
+
+- **Fixed the Backpack box breaking past 3 digits**: the capacity parser
+  only matched plain digits, so a large number formatted with thousands-
+  separator commas (e.g. "1,234/500,000", common once numbers cross that
+  boundary) silently stopped matching right at the comma. Now accepts and
+  strips commas, so capacity can scale to any number of digits.
+
 ## 1.3.0
 
 - Added an **in-world floating label** for grilled players ("Grilled!

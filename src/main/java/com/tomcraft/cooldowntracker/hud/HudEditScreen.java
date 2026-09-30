@@ -22,7 +22,7 @@ public class HudEditScreen extends Screen {
     private static final float SCROLL_STEP = 0.1f;
     private static final String SAMPLE_TOAST_TEXT = "Example is ready!";
 
-    private enum Dragging {NONE, READY, COOLDOWN, TOAST, BACKPACK, TOTEM_WATCH, SNAKE_EYES, MOOD_SWINGS, GRILLED}
+    private enum Dragging {NONE, READY, COOLDOWN, TOAST, BACKPACK, TOTEM_WATCH, SNAKE_EYES, MOOD_SWINGS, GRILLED, POTIONS}
 
     private Dragging dragging = Dragging.NONE;
     private int dragOffsetX;
@@ -51,8 +51,8 @@ public class HudEditScreen extends Screen {
         List<CooldownBoxes.Line> readyLines = CooldownBoxes.getReadyLines();
         List<CooldownBoxes.Line> cooldownLines = CooldownBoxes.getCooldownLines();
 
-        CooldownHud.drawBox(matrices, client, "Ready", readyLines, layout.readyBoxX, layout.readyBoxY, layout.readyBoxScale, 0xFFA9F5C4, layout);
-        drawOutlineAround(matrices, BOX_OUTLINE, "Ready", readyLines, layout.readyBoxX, layout.readyBoxY, layout.readyBoxScale);
+        CooldownHud.drawReadyList(matrices, client, readyLines, layout.readyBoxX, layout.readyBoxY, layout.readyBoxScale, true);
+        drawSingleValueOutline(matrices, CooldownHud.measureReadyList(client, readyLines, true), layout.readyBoxX, layout.readyBoxY, layout.readyBoxScale);
 
         CooldownHud.drawBox(matrices, client, "On Cooldown", cooldownLines, layout.cooldownBoxX, layout.cooldownBoxY, layout.cooldownBoxScale, 0xFFFFC49A, layout);
         drawOutlineAround(matrices, BOX_OUTLINE, "On Cooldown", cooldownLines, layout.cooldownBoxX, layout.cooldownBoxY, layout.cooldownBoxScale);
@@ -73,6 +73,10 @@ public class HudEditScreen extends Screen {
         List<CooldownBoxes.Line> grilledLines = CooldownBoxes.getGrilledLines();
         CooldownHud.drawBox(matrices, client, "Grilled", grilledLines, layout.grilledBoxX, layout.grilledBoxY, layout.grilledBoxScale, 0xFFFFB870, layout);
         drawOutlineAround(matrices, BOX_OUTLINE, "Grilled", grilledLines, layout.grilledBoxX, layout.grilledBoxY, layout.grilledBoxScale);
+
+        List<CooldownBoxes.Line> potionsLines = ActiveEffectsTracker.getEffectLines();
+        CooldownHud.drawBox(matrices, client, "Potions", potionsLines, layout.potionsBoxX, layout.potionsBoxY, layout.potionsBoxScale, 0xFFFF5C5C, layout);
+        drawOutlineAround(matrices, BOX_OUTLINE, "Potions", potionsLines, layout.potionsBoxX, layout.potionsBoxY, layout.potionsBoxScale);
 
         drawSampleToast(matrices, layout);
 
@@ -128,7 +132,7 @@ public class HudEditScreen extends Screen {
 
         HudLayoutConfig.Layout layout = HudLayoutConfig.get();
 
-        if (insideBox(mouseX, mouseY, "Ready", CooldownBoxes.getReadyLines(), layout.readyBoxX, layout.readyBoxY, layout.readyBoxScale)) {
+        if (insideSingleValueBox(mouseX, mouseY, CooldownHud.measureReadyList(client, CooldownBoxes.getReadyLines(), true), layout.readyBoxX, layout.readyBoxY, layout.readyBoxScale)) {
             dragging = Dragging.READY;
             dragOffsetX = (int) mouseX - layout.readyBoxX;
             dragOffsetY = (int) mouseY - layout.readyBoxY;
@@ -176,6 +180,12 @@ public class HudEditScreen extends Screen {
             dragOffsetY = (int) mouseY - layout.grilledBoxY;
             return true;
         }
+        if (insideBox(mouseX, mouseY, "Potions", ActiveEffectsTracker.getEffectLines(), layout.potionsBoxX, layout.potionsBoxY, layout.potionsBoxScale)) {
+            dragging = Dragging.POTIONS;
+            dragOffsetX = (int) mouseX - layout.potionsBoxX;
+            dragOffsetY = (int) mouseY - layout.potionsBoxY;
+            return true;
+        }
 
         return super.mouseClicked(mouseX, mouseY, button);
     }
@@ -221,6 +231,10 @@ public class HudEditScreen extends Screen {
                 layout.grilledBoxX = newX;
                 layout.grilledBoxY = newY;
                 break;
+            case POTIONS:
+                layout.potionsBoxX = newX;
+                layout.potionsBoxY = newY;
+                break;
             default:
                 break;
         }
@@ -241,7 +255,7 @@ public class HudEditScreen extends Screen {
     public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
         HudLayoutConfig.Layout layout = HudLayoutConfig.get();
 
-        if (insideBox(mouseX, mouseY, "Ready", CooldownBoxes.getReadyLines(), layout.readyBoxX, layout.readyBoxY, layout.readyBoxScale)) {
+        if (insideSingleValueBox(mouseX, mouseY, CooldownHud.measureReadyList(client, CooldownBoxes.getReadyLines(), true), layout.readyBoxX, layout.readyBoxY, layout.readyBoxScale)) {
             layout.readyBoxScale = CooldownBoxes.clampScale(layout.readyBoxScale + (float) amount * SCROLL_STEP);
             HudLayoutConfig.save();
             return true;
@@ -273,6 +287,11 @@ public class HudEditScreen extends Screen {
         }
         if (insideBox(mouseX, mouseY, "Grilled", CooldownBoxes.getGrilledLines(), layout.grilledBoxX, layout.grilledBoxY, layout.grilledBoxScale)) {
             layout.grilledBoxScale = CooldownBoxes.clampScale(layout.grilledBoxScale + (float) amount * SCROLL_STEP);
+            HudLayoutConfig.save();
+            return true;
+        }
+        if (insideBox(mouseX, mouseY, "Potions", ActiveEffectsTracker.getEffectLines(), layout.potionsBoxX, layout.potionsBoxY, layout.potionsBoxScale)) {
+            layout.potionsBoxScale = CooldownBoxes.clampScale(layout.potionsBoxScale + (float) amount * SCROLL_STEP);
             HudLayoutConfig.save();
             return true;
         }

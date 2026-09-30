@@ -41,8 +41,9 @@ import static net.fabricmc.fabric.api.client.command.v1.ClientCommandManager.lit
  * /cooldowns togglesnakeeyes      - show/hide the Snake Eyes current-buff box
  * /cooldowns togglemoodswings     - show/hide the Mood Swings current-mood box
  * /cooldowns togglegrilled       - show/hide the Grilled (Barbeque targets) box
+ * /cooldowns togglepotions      - show/hide the Potions (active status effects) box
  * /cooldowns togglepopup        - show/hide the ready pop-up
- * /cooldowns setscale <ready|cooldown|backpack|totem|snake|mood|grilled> <50-300> - set a box's text/size as a percentage
+ * /cooldowns setscale <ready|cooldown|backpack|totem|snake|mood|grilled|potions> <50-300> - set a box's text/size as a percentage
  * /cooldowns setcolor <id> <hex> - give one item a fixed display color, e.g. FF8800
  * /cooldowns setbgcolor <hex>   - set the HUD panels' background color
  * /cooldowns setopacity <0-100> - set the HUD panels' background opacity
@@ -149,6 +150,14 @@ public class CooldownCommands {
                                     "[CooldownTracker] Grilled box " + (layout.grilledBoxVisible ? "shown" : "hidden") + "."));
                             return 1;
                         }))
+                        .then(literal("togglepotions").executes(ctx -> {
+                            HudLayoutConfig.Layout layout = HudLayoutConfig.get();
+                            layout.potionsBoxVisible = !layout.potionsBoxVisible;
+                            HudLayoutConfig.save();
+                            ctx.getSource().sendFeedback(new LiteralText(
+                                    "[CooldownTracker] Potions box " + (layout.potionsBoxVisible ? "shown" : "hidden") + "."));
+                            return 1;
+                        }))
                         .then(literal("togglepopup").executes(ctx -> {
                             HudLayoutConfig.Layout layout = HudLayoutConfig.get();
                             layout.toastVisible = !layout.toastVisible;
@@ -181,9 +190,11 @@ public class CooldownCommands {
                                                         layout.moodSwingsBoxScale = scale;
                                                     } else if (box.startsWith("grilled")) {
                                                         layout.grilledBoxScale = scale;
+                                                    } else if (box.startsWith("resist") || box.startsWith("potion")) {
+                                                        layout.potionsBoxScale = scale;
                                                     } else {
                                                         ctx.getSource().sendFeedback(new LiteralText(
-                                                                "[CooldownTracker] Unknown box '" + box + "' - use 'ready', 'cooldown', 'backpack', 'totem', 'snake', 'mood', or 'grilled'."));
+                                                                "[CooldownTracker] Unknown box '" + box + "' - use 'ready', 'cooldown', 'backpack', 'totem', 'snake', 'mood', 'grilled', or 'potions'."));
                                                         return 0;
                                                     }
                                                     HudLayoutConfig.save();

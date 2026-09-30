@@ -21,8 +21,12 @@ public class BackpackTracker {
 
     // Matches the "current/max" capacity pair anywhere in the item name -
     // specific enough not to accidentally match something like "Lvl. 1"
-    // (no slash there), general enough to survive wording changes.
-    private static final Pattern CAPACITY_PATTERN = Pattern.compile("(\\d+)\\s*/\\s*(\\d+)");
+    // (no slash there), general enough to survive wording changes. Also
+    // tolerates thousands-separator commas (e.g. "1,234/500,000"), which
+    // is likely why this previously appeared to "stop working" past 3
+    // digits - large numbers are commonly comma-formatted once they cross
+    // that boundary, and a plain \d+ silently stops matching at the comma.
+    private static final Pattern CAPACITY_PATTERN = Pattern.compile("(\\d[\\d,]*)\\s*/\\s*(\\d[\\d,]*)");
 
     private static Integer current = null;
     private static Integer max = null;
@@ -49,8 +53,8 @@ public class BackpackTracker {
         Matcher matcher = CAPACITY_PATTERN.matcher(name);
         if (matcher.find()) {
             try {
-                current = Integer.parseInt(matcher.group(1));
-                max = Integer.parseInt(matcher.group(2));
+                current = Integer.parseInt(matcher.group(1).replace(",", ""));
+                max = Integer.parseInt(matcher.group(2).replace(",", ""));
             } catch (NumberFormatException e) {
                 current = null;
                 max = null;

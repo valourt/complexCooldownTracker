@@ -15,6 +15,7 @@ public class CooldownKeybinds {
     public static KeyBinding toggleSnakeEyesBoxKey;
     public static KeyBinding toggleMoodSwingsBoxKey;
     public static KeyBinding toggleGrilledBoxKey;
+    public static KeyBinding togglePotionsBoxKey;
 
     public static void register() {
         // All unbound by default (GLFW_KEY_UNKNOWN) - bind them yourself
@@ -65,6 +66,12 @@ public class CooldownKeybinds {
         ));
         toggleGrilledBoxKey = KeyBindingHelper.registerKeyBinding(new KeyBinding(
                 "key.cooldowntracker.toggle_grilled_box",
+                InputUtil.Type.KEYSYM,
+                GLFW.GLFW_KEY_UNKNOWN,
+                "category.cooldowntracker"
+        ));
+        togglePotionsBoxKey = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+                "key.cooldowntracker.toggle_potions_box",
                 InputUtil.Type.KEYSYM,
                 GLFW.GLFW_KEY_UNKNOWN,
                 "category.cooldowntracker"

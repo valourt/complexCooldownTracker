@@ -60,6 +60,11 @@ public class HudLayoutConfig {
         public float grilledBoxScale = 1.0f;
         public boolean grilledBoxVisible = true;
 
+        public int potionsBoxX = 200;
+        public int potionsBoxY = 6;
+        public float potionsBoxScale = 1.0f;
+        public boolean potionsBoxVisible = true;
+
         public String backgroundColorHex = "1E1E1E";
         public int backgroundOpacityPercent = 85;
     }

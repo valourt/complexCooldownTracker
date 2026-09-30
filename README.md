@@ -1,6 +1,6 @@
 # Cooldown Tracker (Fabric, 1.18.2)
 
-Current version: **1.3.0** — check `/cooldowns version` in-game to confirm
+Current version: **1.3.9** — check `/cooldowns version` in-game to confirm
 which build you're actually running, and see `CHANGELOG.md` for what
 changed in each version.
 
@@ -49,7 +49,7 @@ update that one line.
 
 ## 3. Moving the HUD boxes
 
-There are seven boxes:
+There are eight boxes:
 - **Ready** — every tracked item you currently own that isn't on cooldown,
   in white (or a custom color you've set), up to 5 rows per column,
   wrapping into a new column as needed.
@@ -82,6 +82,11 @@ There are seven boxes:
   soonest-expiring first. Also shows a light blue/cyan floating "Grilled!"
   label above their head in-world while active - stacks above the Totem
   Watch label if a player happens to have both at once.
+- **Potions** — every currently active status effect (not just
+  Resistance), with tier and remaining time, e.g. "Resistance II (0:15)"
+  or "Strength I (0:42)" - color-coded green for beneficial effects, red
+  for harmful ones. Unlike most boxes here this reads real vanilla status
+  effects directly, so there's no guessing involved in detecting it.
 
 Each starts in the top-left corner. To reposition/resize/hide them, or
 restyle the background, or move the ready pop-up: run `/cooldowns hud`
@@ -263,8 +268,8 @@ Other commands:
 - `/cooldowns addprojectile <seconds> <name>` — track an item with no message and an unreliable cooldown sweep, via ownership of a fired projectile (see above)
 - `/cooldowns hud` — open the drag-to-reposition HUD editor
 - `/cooldowns settings` — open the settings GUI directly
-- `/cooldowns togglereadybox` / `/cooldowns togglecooldownbox` / `/cooldowns togglebackpackbox` / `/cooldowns toggletotemwatch` / `/cooldowns togglesnakeeyes` / `/cooldowns togglemoodswings` / `/cooldowns togglegrilled` / `/cooldowns togglepopup` — show/hide a box or the ready pop-up
-- `/cooldowns setscale <ready|cooldown|backpack|totem|snake|mood|grilled> <50-300>` — set a box's text/size as a percentage
+- `/cooldowns togglereadybox` / `/cooldowns togglecooldownbox` / `/cooldowns togglebackpackbox` / `/cooldowns toggletotemwatch` / `/cooldowns togglesnakeeyes` / `/cooldowns togglemoodswings` / `/cooldowns togglegrilled` / `/cooldowns togglepotions` / `/cooldowns togglepopup` — show/hide a box or the ready pop-up
+- `/cooldowns setscale <ready|cooldown|backpack|totem|snake|mood|grilled|potions> <50-300>` — set a box's text/size as a percentage
 - `/cooldowns setcolor <id> <hex>` — give one item a fixed color (e.g. `FF8800`), overriding the automatic urgency coloring
 - `/cooldowns setbgcolor <hex>` / `/cooldowns setopacity <0-100>` — restyle the HUD panels' background (`setopacity 0` gives clean text with no panel at all)
 - `/cooldowns importcsv [file]` — bulk-import from a CSV (see above)
@@ -301,6 +306,17 @@ running the mod picks up the change automatically next time they log in —
 you don't need to redistribute a new jar or ask anyone to do anything.
 This is entirely client-side (each player's own game fetches the file
 directly); there's no server component or central service involved.
+
+### Auto-picked icons and colours
+
+Each rune's icon and theme colour are learned automatically from the
+game's own text - item names/lore whenever your inventory changes, and
+chat lines like "<icon> Lightning Crash I | ..." as they arrive (including
+other players' uses). Icons appear in the On Cooldown panel; colours tint
+rune names in both lists. Your own `setcolor`/CSV `color` always wins.
+Learned styles are stored in `config/cooldowntracker/rune_styles.json`
+(delete it to relearn). Colours start filling in as soon as you have the
+runes in your inventory and sharpen as you see them used in chat.
 
 ## How detection works (for future tweaking)
 

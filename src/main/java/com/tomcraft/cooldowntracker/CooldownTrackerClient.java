@@ -3,6 +3,7 @@ package com.tomcraft.cooldowntracker;
 import com.tomcraft.cooldowntracker.command.CooldownCommands;
 import com.tomcraft.cooldowntracker.config.CooldownConfig;
 import com.tomcraft.cooldowntracker.config.RemoteUpdateManager;
+import com.tomcraft.cooldowntracker.config.RuneStyleCache;
 import com.tomcraft.cooldowntracker.hud.CooldownHud;
 import com.tomcraft.cooldowntracker.hud.CooldownKeybinds;
 import com.tomcraft.cooldowntracker.hud.ArmorEffectTracker;
@@ -27,6 +28,7 @@ public class CooldownTrackerClient implements ClientModInitializer {
         CooldownConfig.init();
         HudLayoutConfig.init();
         RemoteUpdateManager.init();
+        RuneStyleCache.init();
         CooldownHud.register();
         CooldownCommands.register();
         CooldownKeybinds.register();
@@ -99,6 +101,11 @@ public class CooldownTrackerClient implements ClientModInitializer {
             while (CooldownKeybinds.toggleGrilledBoxKey.wasPressed()) {
                 HudLayoutConfig.Layout layout = HudLayoutConfig.get();
                 layout.grilledBoxVisible = !layout.grilledBoxVisible;
+                HudLayoutConfig.save();
+            }
+            while (CooldownKeybinds.togglePotionsBoxKey.wasPressed()) {
+                HudLayoutConfig.Layout layout = HudLayoutConfig.get();
+                layout.potionsBoxVisible = !layout.potionsBoxVisible;
                 HudLayoutConfig.save();
             }
         });

@@ -18,6 +18,7 @@ import java.util.List;
 public class CooldownHud {
 
     private static final int SHADOW_COLOR = 0x30000000;
+    private static final int BORDER_COLOR = 0xB0D0D0D8;
     private static final int EMPTY_COLOR = 0xFF7D7D82;
     private static final int READY_TITLE_COLOR = 0xFFA9F5C4;
     private static final int COOLDOWN_TITLE_COLOR = 0xFFFFC49A;
@@ -26,6 +27,7 @@ public class CooldownHud {
     private static final int SNAKE_EYES_TITLE_COLOR = 0xFFFF9E9E;
     private static final int MOOD_SWINGS_TITLE_COLOR = 0xFFB8F5C7;
     private static final int GRILLED_TITLE_COLOR = 0xFFFFB870;
+    private static final int POTIONS_TITLE_COLOR = 0xFFFF5C5C;
 
     public static void register() {
         HudRenderCallback.EVENT.register(CooldownHud::render);
@@ -39,8 +41,8 @@ public class CooldownHud {
         HudLayoutConfig.Layout layout = HudLayoutConfig.get();
 
         if (layout.readyBoxVisible) {
-            drawBox(matrices, client, "Ready", CooldownBoxes.getReadyLines(),
-                    layout.readyBoxX, layout.readyBoxY, layout.readyBoxScale, READY_TITLE_COLOR, layout);
+            drawReadyList(matrices, client, CooldownBoxes.getReadyLines(),
+                    layout.readyBoxX, layout.readyBoxY, layout.readyBoxScale, false);
         }
         if (layout.cooldownBoxVisible) {
             drawBox(matrices, client, "On Cooldown", CooldownBoxes.getCooldownLines(),
@@ -62,6 +64,10 @@ public class CooldownHud {
         if (layout.grilledBoxVisible) {
             drawBox(matrices, client, "Grilled", CooldownBoxes.getGrilledLines(),
                     layout.grilledBoxX, layout.grilledBoxY, layout.grilledBoxScale, GRILLED_TITLE_COLOR, layout);
+        }
+        if (layout.potionsBoxVisible) {
+            drawBox(matrices, client, "Potions", ActiveEffectsTracker.getEffectLines(),
+                    layout.potionsBoxX, layout.potionsBoxY, layout.potionsBoxScale, POTIONS_TITLE_COLOR, layout);
         }
 
         if (layout.toastVisible) {
@@ -105,6 +111,77 @@ public class CooldownHud {
         }
     }
 
+    /** Crisp flat panel with a thin light outline. Opacity 0 = no panel at all (clean text only). */
+    private static void drawOutlinedPanel(MatrixStack matrices, int width, int height, HudLayoutConfig.Layout layout) {
+        if (layout.backgroundOpacityPercent <= 0) return;
+        int bg = RoundedPanel.toArgb(layout.backgroundColorHex, layout.backgroundOpacityPercent);
+        DrawableHelper.fill(matrices, 0, 0, width, height, bg);
+        DrawableHelper.fill(matrices, 0, 0, width, 1, BORDER_COLOR);
+        DrawableHelper.fill(matrices, 0, height - 1, width, height, BORDER_COLOR);
+        DrawableHelper.fill(matrices, 0, 0, 1, height, BORDER_COLOR);
+        DrawableHelper.fill(matrices, width - 1, 0, width, height, BORDER_COLOR);
+    }
+
+    /**
+     * Size of the plain-text Ready list. Empty = nothing drawn in-game; in the
+     * HUD editor a placeholder is shown so the list can still be found and moved.
+     */
+    static int[] measureReadyList(MinecraftClient client, List<CooldownBoxes.Line> lines, boolean editor) {
+        if (lines.isEmpty()) {
+            if (!editor) return new int[]{0, 0};
+            return new int[]{client.textRenderer.getWidth(CooldownFont.styled("Ready \u2014", CooldownFont.REGULAR)), CooldownBoxes.LINE_HEIGHT};
+        }
+        int per = CooldownBoxes.MAX_ROWS_PER_COLUMN;
+        int columns = (int) Math.ceil(lines.size() / (double) per);
+        int width = 0;
+        int maxRows = 0;
+        for (int c = 0; c < columns; c++) {
+            int start = c * per;
+            int end = Math.min(start + per, lines.size());
+            int colW = 0;
+            for (int i = start; i < end; i++) {
+                colW = Math.max(colW, client.textRenderer.getWidth(CooldownFont.styled(lines.get(i).text + " Ready", CooldownFont.REGULAR)));
+            }
+            width += colW + (c > 0 ? CooldownBoxes.COLUMN_GAP : 0);
+            maxRows = Math.max(maxRows, end - start);
+        }
+        return new int[]{width, maxRows * CooldownBoxes.LINE_HEIGHT};
+    }
+
+    /** Ready list as small plain coloured text ("Green Shell Ready") - no panel, no title, no markers. */
+    static void drawReadyList(MatrixStack matrices, MinecraftClient client, List<CooldownBoxes.Line> lines,
+                              int x, int y, float scale, boolean editor) {
+        if (lines.isEmpty() && !editor) return;
+
+        matrices.push();
+        matrices.translate(x, y, 0);
+        matrices.scale(scale, scale, 1f);
+
+        if (lines.isEmpty()) {
+            client.textRenderer.drawWithShadow(matrices, CooldownFont.styled("Ready \u2014", CooldownFont.REGULAR), 0, 0, EMPTY_COLOR);
+            matrices.pop();
+            return;
+        }
+
+        int per = CooldownBoxes.MAX_ROWS_PER_COLUMN;
+        int columns = (int) Math.ceil(lines.size() / (double) per);
+        int colX = 0;
+        for (int c = 0; c < columns; c++) {
+            int start = c * per;
+            int end = Math.min(start + per, lines.size());
+            int colW = 0;
+            int rowY = 0;
+            for (int i = start; i < end; i++) {
+                net.minecraft.text.Text t = CooldownFont.styled(lines.get(i).text + " Ready", CooldownFont.REGULAR);
+                client.textRenderer.drawWithShadow(matrices, t, colX, rowY, lines.get(i).color);
+                colW = Math.max(colW, client.textRenderer.getWidth(t));
+                rowY += CooldownBoxes.LINE_HEIGHT;
+            }
+            colX += colW + CooldownBoxes.COLUMN_GAP;
+        }
+        matrices.pop();
+    }
+
     static void drawBox(MatrixStack matrices, MinecraftClient client, String title, List<CooldownBoxes.Line> lines,
                          int x, int y, float scale, int titleColor, HudLayoutConfig.Layout layout) {
         int[] size = CooldownBoxes.measure(client.textRenderer, title, lines);
@@ -119,11 +196,7 @@ public class CooldownHud {
         // Opacity 0 means "clean text only, no panel at all" - the drop
         // shadow rect needs to be skipped too, or you'd still see a faint
         // dark box even with the background itself fully transparent.
-        if (layout.backgroundOpacityPercent > 0) {
-            RoundedPanel.draw(matrices, 2, 2, width, height, SHADOW_COLOR);
-            int bgColor = RoundedPanel.toArgb(layout.backgroundColorHex, layout.backgroundOpacityPercent);
-            RoundedPanel.draw(matrices, 0, 0, width, height, bgColor);
-        }
+        drawOutlinedPanel(matrices, width, height, layout);
 
         if (lines.isEmpty()) {
             client.textRenderer.drawWithShadow(matrices, CooldownFont.styled(title + " \u2014", CooldownFont.BOLD),
@@ -144,9 +217,17 @@ public class CooldownHud {
             int rowY = headerHeight;
             for (int i = startIdx; i < endIdx; i++) {
                 CooldownBoxes.Line line = lines.get(i);
-                int markerY = rowY + (client.textRenderer.fontHeight - CooldownBoxes.MARKER_SIZE) / 2;
-                DrawableHelper.fill(matrices, colX, markerY, colX + CooldownBoxes.MARKER_SIZE, markerY + CooldownBoxes.MARKER_SIZE, line.color);
-                int textX = colX + CooldownBoxes.MARKER_SIZE + CooldownBoxes.MARKER_GAP;
+                int slot = CooldownBoxes.slotWidth(lines);
+                if (line.icon != null && line.icon.glyph != null && !line.icon.glyph.isEmpty()) {
+                    net.minecraft.text.Text glyphText = CooldownFont.styled(line.icon.glyph, line.icon.fontId());
+                    int glyphWidth = client.textRenderer.getWidth(glyphText);
+                    client.textRenderer.drawWithShadow(matrices, glyphText, colX + Math.max(0f, (slot - glyphWidth) / 2f), rowY, line.icon.glyphColor);
+                } else {
+                    int markerX = colX + (slot - CooldownBoxes.MARKER_SIZE) / 2;
+                    int markerY = rowY + (client.textRenderer.fontHeight - CooldownBoxes.MARKER_SIZE) / 2;
+                    DrawableHelper.fill(matrices, markerX, markerY, markerX + CooldownBoxes.MARKER_SIZE, markerY + CooldownBoxes.MARKER_SIZE, line.color);
+                }
+                int textX = colX + slot + CooldownBoxes.MARKER_GAP;
 
                 String name = line.text.substring(0, line.nameLength);
                 client.textRenderer.drawWithShadow(matrices, CooldownFont.styled(name, CooldownFont.REGULAR), textX, rowY, line.color);
@@ -185,11 +266,7 @@ public class CooldownHud {
         matrices.translate(x, y, 0);
         matrices.scale(scale, scale, 1f);
 
-        if (layout.backgroundOpacityPercent > 0) {
-            RoundedPanel.draw(matrices, 2, 2, width, height, SHADOW_COLOR);
-            int bgColor = RoundedPanel.toArgb(layout.backgroundColorHex, layout.backgroundOpacityPercent);
-            RoundedPanel.draw(matrices, 0, 0, width, height, bgColor);
-        }
+        drawOutlinedPanel(matrices, width, height, layout);
 
         client.textRenderer.drawWithShadow(matrices, CooldownFont.styled(title, CooldownFont.BOLD),
                 CooldownBoxes.PADDING, CooldownBoxes.PADDING, titleColor);

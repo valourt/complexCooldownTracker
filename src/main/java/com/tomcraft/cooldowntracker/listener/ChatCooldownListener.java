@@ -38,10 +38,29 @@ public class ChatCooldownListener {
             return;
         }
 
+        // "No longer X" describes an effect ENDING (a debuff someone else
+        // applied to you wearing off, e.g. "You are no longer covered in
+        // mucus"), not an activation - it still uses "You" and a checkmark,
+        // so it'd otherwise pass every gate above and wrongly start a
+        // cooldown for an ability someone else used on you. Same principle
+        // as the "on cooldown" exclusion: skip anything describing an
+        // ending, regardless of which item it's about.
+        if (lower.contains("no longer")) {
+            return;
+        }
+
         // Some servers broadcast every player's ability use publicly, not
         // just yours - a line mentioning another currently-online player by
-        // name is their activation, not yours, so skip it before matching.
-        if (OnlinePlayerCache.mentionsOtherPlayer(lower)) {
+        // name is USUALLY their activation, not yours. But an ability that
+        // targets another player (pulls them, binds them, etc.) can mention
+        // that player's name in YOUR OWN success message too, e.g. "Making
+        // you and Cow gravitate towards each other!" - which would otherwise
+        // be wrongly skipped just because "Cow" happens to be someone's
+        // username. The distinguishing signal is "you"/"your": your own
+        // activation is second-person, a genuine other-player broadcast is
+        // third-person (their name as the actor, no "you" anywhere) - so
+        // only apply the exclusion when "you" is absent.
+        if (OnlinePlayerCache.mentionsOtherPlayer(lower) && !lower.contains("you")) {
             return;
         }
 
