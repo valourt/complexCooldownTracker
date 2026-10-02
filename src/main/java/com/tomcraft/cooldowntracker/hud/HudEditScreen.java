@@ -54,14 +54,14 @@ public class HudEditScreen extends Screen {
         CooldownHud.drawReadyList(matrices, client, readyLines, layout.readyBoxX, layout.readyBoxY, layout.readyBoxScale, true);
         drawSingleValueOutline(matrices, CooldownHud.measureReadyList(client, readyLines, true), layout.readyBoxX, layout.readyBoxY, layout.readyBoxScale);
 
-        CooldownHud.drawBox(matrices, client, "On Cooldown", cooldownLines, layout.cooldownBoxX, layout.cooldownBoxY, layout.cooldownBoxScale, 0xFFFFC49A, layout);
+        CooldownHud.drawBox(matrices, client, "On Cooldown", cooldownLines, layout.cooldownBoxX, layout.cooldownBoxY, layout.cooldownBoxScale, 0xFFFFC49A, layout, true);
         drawOutlineAround(matrices, BOX_OUTLINE, "On Cooldown", cooldownLines, layout.cooldownBoxX, layout.cooldownBoxY, layout.cooldownBoxScale);
 
         CooldownHud.drawBackpackBox(matrices, client, layout.backpackBoxX, layout.backpackBoxY, layout.backpackBoxScale, layout);
         drawSingleValueOutline(matrices, CooldownHud.measureBackpackBox(client), layout.backpackBoxX, layout.backpackBoxY, layout.backpackBoxScale);
 
         List<CooldownBoxes.Line> totemWatchLines = CooldownBoxes.getOtherTotemLines();
-        CooldownHud.drawBox(matrices, client, "Totem Watch", totemWatchLines, layout.totemWatchBoxX, layout.totemWatchBoxY, layout.totemWatchBoxScale, 0xFF8FD6FF, layout);
+        CooldownHud.drawBox(matrices, client, "Totem Watch", totemWatchLines, layout.totemWatchBoxX, layout.totemWatchBoxY, layout.totemWatchBoxScale, 0xFF8FD6FF, layout, true);
         drawOutlineAround(matrices, BOX_OUTLINE, "Totem Watch", totemWatchLines, layout.totemWatchBoxX, layout.totemWatchBoxY, layout.totemWatchBoxScale);
 
         CooldownHud.drawSnakeEyesBox(matrices, client, layout.snakeEyesBoxX, layout.snakeEyesBoxY, layout.snakeEyesBoxScale, layout);
@@ -71,11 +71,11 @@ public class HudEditScreen extends Screen {
         drawSingleValueOutline(matrices, CooldownHud.measureMoodSwingsBox(client), layout.moodSwingsBoxX, layout.moodSwingsBoxY, layout.moodSwingsBoxScale);
 
         List<CooldownBoxes.Line> grilledLines = CooldownBoxes.getGrilledLines();
-        CooldownHud.drawBox(matrices, client, "Grilled", grilledLines, layout.grilledBoxX, layout.grilledBoxY, layout.grilledBoxScale, 0xFFFFB870, layout);
+        CooldownHud.drawBox(matrices, client, "Grilled", grilledLines, layout.grilledBoxX, layout.grilledBoxY, layout.grilledBoxScale, 0xFFFFB870, layout, true);
         drawOutlineAround(matrices, BOX_OUTLINE, "Grilled", grilledLines, layout.grilledBoxX, layout.grilledBoxY, layout.grilledBoxScale);
 
         List<CooldownBoxes.Line> potionsLines = ActiveEffectsTracker.getEffectLines();
-        CooldownHud.drawBox(matrices, client, "Potions", potionsLines, layout.potionsBoxX, layout.potionsBoxY, layout.potionsBoxScale, 0xFFFF5C5C, layout);
+        CooldownHud.drawBox(matrices, client, "Potions", potionsLines, layout.potionsBoxX, layout.potionsBoxY, layout.potionsBoxScale, 0xFFFF5C5C, layout, true);
         drawOutlineAround(matrices, BOX_OUTLINE, "Potions", potionsLines, layout.potionsBoxX, layout.potionsBoxY, layout.potionsBoxScale);
 
         drawSampleToast(matrices, layout);

@@ -184,6 +184,17 @@ public class CooldownHud {
 
     static void drawBox(MatrixStack matrices, MinecraftClient client, String title, List<CooldownBoxes.Line> lines,
                          int x, int y, float scale, int titleColor, HudLayoutConfig.Layout layout) {
+        drawBox(matrices, client, title, lines, x, y, scale, titleColor, layout, false);
+    }
+
+    static void drawBox(MatrixStack matrices, MinecraftClient client, String title, List<CooldownBoxes.Line> lines,
+                         int x, int y, float scale, int titleColor, HudLayoutConfig.Layout layout, boolean editor) {
+        // Nothing to show and we're not in the editor - hide the box
+        // entirely rather than drawing an empty "Title —" placeholder.
+        // The editor still needs that placeholder so an empty box can be
+        // found and repositioned.
+        if (lines.isEmpty() && !editor) return;
+
         int[] size = CooldownBoxes.measure(client.textRenderer, title, lines);
         int width = size[0];
         int height = size[1];

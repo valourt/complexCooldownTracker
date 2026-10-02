@@ -26,6 +26,16 @@ picks up exactly where 2.5.0 left off (same code, renumbered).
   - The removed diagnostic logging from 1.3.4 (a temporary debug-only
     build) is gone in this version.
 
+## 1.4.0
+
+- **Boxes now hide entirely when they have nothing to show**, instead of
+  always displaying an empty "Title —" placeholder: On Cooldown, Totem
+  Watch, Grilled, and Potions all behave this way now, matching how the
+  Ready list, Backpack, Snake Eyes, and Mood Swings boxes already worked.
+  The HUD editor (`/cooldowns hud`) still shows the placeholder for every
+  box regardless of content, so an empty one can still be found and
+  repositioned.
+
 ## 1.3.9
 
 - **Fixed**: an ability that targets another player by name (e.g.
